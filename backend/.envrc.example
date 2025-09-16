@@ -1,0 +1,4 @@
+export PG_USER="youchat"
+export PG_DB="youchat"
+export PG_JDBC_URL="jdbc:postgresql://localhost:5432/${PG_DB}"
+export PG_PASS="your_password_here"
