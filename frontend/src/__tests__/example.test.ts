@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia } from 'pinia'
-import { createRouter, createWebHistory, Router } from 'vue-router'
+import { describe, expect, it } from 'vitest'
+import { createRouter, createWebHistory } from 'vue-router'
 
 // 示例测试：测试一个简单的计数器组件
 describe('Counter', () => {
@@ -20,8 +20,8 @@ describe('Counter', () => {
       methods: {
         increment() {
           this.count++
-        }
-      }
+        },
+      },
     }
 
     const wrapper = mount(Counter)
@@ -42,9 +42,7 @@ describe('Counter', () => {
   it('works with Vue Router', () => {
     const router = createRouter({
       history: createWebHistory(),
-      routes: [
-        { path: '/', component: { template: '<div>Home</div>' } }
-      ]
+      routes: [{ path: '/', component: { template: '<div>Home</div>' } }],
     })
 
     expect(router).toBeDefined()

@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import { mount, VueWrapper } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
+import { describe, expect, it } from 'vitest'
 import HomeView from './HomeView.vue'
 
 // 创建图标组件的 stub
 const createIconStub = () => ({
   template: '<span class="icon-stub"></span>',
-  props: ['class']
+  props: ['class'],
 })
 
 // 全局组件 stub
@@ -15,15 +15,15 @@ const globalStubs = {
   'i-tabler-home-plus': createIconStub(),
   'i-tabler-upload': createIconStub(),
   'i-tabler-login': createIconStub(),
-  'i-tabler-user-plus': createIconStub()
+  'i-tabler-user-plus': createIconStub(),
 }
 
 describe('HomeView', () => {
   it('should display YouChat app information', () => {
     const wrapper = mount(HomeView, {
       global: {
-        stubs: globalStubs
-      }
+        stubs: globalStubs,
+      },
     })
 
     // 测试标题显示
@@ -34,15 +34,15 @@ describe('HomeView', () => {
   it('should have login and register buttons', () => {
     const wrapper = mount(HomeView, {
       global: {
-        stubs: globalStubs
-      }
+        stubs: globalStubs,
+      },
     })
 
     // 测试存在登录和注册按钮
     const buttons = wrapper.findAll('button')
     expect(buttons.length).toBeGreaterThanOrEqual(2)
 
-    const buttonTexts = buttons.map(btn => btn.text())
+    const buttonTexts = buttons.map((btn) => btn.text())
     expect(buttonTexts).toContain('登录')
     expect(buttonTexts).toContain('注册')
   })
@@ -50,8 +50,8 @@ describe('HomeView', () => {
   it('should have visible and prominent buttons', () => {
     const wrapper = mount(HomeView, {
       global: {
-        stubs: globalStubs
-      }
+        stubs: globalStubs,
+      },
     })
 
     const loginButton = wrapper.find('button')
@@ -63,16 +63,16 @@ describe('HomeView', () => {
 
     // 测试按钮是否包含突出的样式类
     const classes = loginButton.classes()
-    expect(classes.some(cls =>
-      cls.includes('btn') || cls.includes('primary') || cls.includes('lg')
-    )).toBe(true)
+    expect(
+      classes.some((cls) => cls.includes('btn') || cls.includes('primary') || cls.includes('lg')),
+    ).toBe(true)
   })
 
   it('should display feature cards with DaisyUI styling', () => {
     const wrapper = mount(HomeView, {
       global: {
-        stubs: globalStubs
-      }
+        stubs: globalStubs,
+      },
     })
 
     // 测试功能卡片是否存在
@@ -95,8 +95,8 @@ describe('HomeView', () => {
   it('should use semantic color classes instead of hardcoded colors', () => {
     const wrapper = mount(HomeView, {
       global: {
-        stubs: globalStubs
-      }
+        stubs: globalStubs,
+      },
     })
 
     // 测试主标题使用语义化颜色
@@ -109,13 +109,13 @@ describe('HomeView', () => {
 
     // 测试卡片使用语义化背景色
     const cards = wrapper.findAll('.card')
-    cards.forEach(card => {
+    cards.forEach((card) => {
       expect(card.classes()).toContain('bg-base-100')
     })
 
     // 测试卡片标题使用语义化颜色
     const cardTitles = wrapper.findAll('.card-title')
-    cardTitles.forEach(title => {
+    cardTitles.forEach((title) => {
       expect(title.classes()).toContain('text-primary-content')
     })
 
