@@ -16,71 +16,73 @@
 
 ```mermaid
 erDiagram
-    users {
-        bigint id PK
-        varchar username "UNIQUE"
-        varchar password
-        varchar nickname
-        varchar avatar_url
-        timestamptz created_at
-        timestamptz updated_at
-    }
+ direction TB
+ users {
+  bigint id PK ""  
+  varchar username UK ""  
+  varchar password  ""  
+  varchar nickname  ""  
+  varchar avatar_url  ""  
+  jsonb settings  ""  
+  timestamptz created_at  ""  
+  timestamptz updated_at  ""  
+ }
 
-    friendships {
-        bigint user1_id PK, FK
-        bigint user2_id PK, FK
-        timestamptz created_at
-    }
+ chat_groups {
+  bigint id PK ""  
+  varchar name  ""  
+  text description  ""  
+  varchar avatar_url  ""  
+  bigint owner_id FK ""  
+  jsonb settings  ""  
+  jsonb announcement  ""  
+  timestamptz created_at  ""  
+  timestamptz updated_at  ""  
+ }
 
-    chat_groups {
-        bigint id PK
-        varchar name
-        text description
-        varchar avatar_url
-        bigint owner_id FK
-        timestamptz created_at
-        timestamptz updated_at
-    }
+ group_members {
+  bigint id PK ""  
+  bigint group_id FK ""  
+  bigint user_id FK ""  
+  varchar role  ""  
+  jsonb settings  ""  
+  timestamptz created_at  ""  
+  timestamptz updated_at  ""  
+ }
 
-    group_members {
-        bigint group_id PK, FK
-        bigint user_id PK, FK
-        varchar role
-        timestamptz joined_at
-    }
+ message_read_records {
+  bigint id PK ""  
+  bigint message_id FK ""  
+  bigint user_id FK ""  
+  timestamptz read_at  ""  
+ }
 
-    private_messages {
-        bigint id PK
-        bigint sender_id FK
-        bigint receiver_id FK
-        text content
-        varchar message_type
-        timestamptz sent_at
-        boolean is_read
-    }
+ friendships {
+  bigint user1_id PK,FK ""  
+  bigint user2_id PK,FK ""  
+  jsonb extra_info  ""  
+  timestamptz created_at  ""  
+  timestamptz updated_at  ""  
+ }
 
-    group_messages {
-        bigint id PK
-        bigint sender_id FK
-        bigint group_id FK
-        text content
-        varchar message_type
-        timestamptz sent_at
-    }
+ messages {
+  bigint id PK ""  
+  varchar conversation_id  ""  
+  bigint sender_id FK ""  
+  varchar type  ""  
+  jsonb content  ""  
+  timestamptz created_at  ""  
+  timestamptz updated_at  ""  
+ }
 
-    users }o--o| friendships : "is user1 of"
-    users }o--o| friendships : "is user2 of"
-
-    users ||--o{ chat_groups : "owns"
-
-    users }o--o{ group_members : "is member of"
-    chat_groups }o--o{ group_members : "has member"
-
-    users ||--o{ private_messages : "sends"
-    users ||--o{ private_messages : "receives"
-
-    users ||--o{ group_messages : "sends"
-    chat_groups ||--o{ group_messages : "receives messages in"
+ users}o--o{friendships:"is user1 of"
+ users}o--o{friendships:"is user2 of"
+ users||--o{chat_groups:"owns"
+ users}o--o{group_members:"is member of"
+ chat_groups}o--o{group_members:"has member"
+ users||--o{messages:"sends"
+ messages}o--||message_read_records:"has read record"
+ users}o--||message_read_records:"read by"
 ```
 
 ## 5.3 数据库优化策略
