@@ -17,6 +17,14 @@ coverage
 /cypress/videos/
 /cypress/screenshots/
 
+# Playwright 测试报告
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Vitest 缓存
+.vitest/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
