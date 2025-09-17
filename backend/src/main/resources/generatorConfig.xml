@@ -5,9 +5,14 @@
             userId="${db.user}" password="${db.password}">
         </jdbcConnection>
 
-        <javaModelGenerator targetPackage="top.phakeandy.model" targetProject="MAVEN" />
-        <javaClientGenerator targetPackage="top.phakeandy.mapper" targetProject="MAVEN" />
+        <javaModelGenerator targetPackage="top.phakeandy.youchat.model" targetProject="MAVEN" />
+        <javaClientGenerator targetPackage="top.phakeandy.youchat.mapper" targetProject="MAVEN" />
 
-        <table tableName="person" />
+        <table tableName="users" />
+        <table tableName="chat_groups" />
+        <table tableName="friendships" />
+        <table tableName="messages" />
+        <table tableName="group_members" />
+        <table tableName="message_read_records" />
     </context>
 </generatorConfiguration>
