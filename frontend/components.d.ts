@@ -9,6 +9,9 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ITablerAB2: typeof import('~icons/tabler/a-b2')['default']
+    ITablerLogin: typeof import('~icons/tabler/login')['default']
+    ITablerMessageCircle: typeof import('~icons/tabler/message-circle')['default']
+    ITablerUserPlus: typeof import('~icons/tabler/user-plus')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
