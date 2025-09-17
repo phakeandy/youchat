@@ -1,0 +1,13 @@
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "https://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <context id="dsql" targetRuntime="MyBatis3DynamicSql">
+        <jdbcConnection driverClass="org.postgresql.Driver" connectionURL="${db.url}"
+            userId="${db.user}" password="${db.password}">
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="top.phakeandy.model" targetProject="MAVEN" />
+        <javaClientGenerator targetPackage="top.phakeandy.mapper" targetProject="MAVEN" />
+
+        <table tableName="person" />
+    </context>
+</generatorConfiguration>
