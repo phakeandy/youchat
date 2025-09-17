@@ -1,0 +1,4 @@
+logging:
+  level:
+    root: WARN
+  exception-conversion-word: "%xEx{5}"
