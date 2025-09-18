@@ -18,13 +18,13 @@ const openRegisterModal = () => {
 </script>
 
 <template>
-  <section class="text-center">
+  <section>
     <div class="mb-6 flex items-center justify-center gap-4" data-testid="title-container">
       <i-tabler-message-circle class="text-primary text-6xl" />
       <h1 class="text-primary-content text-6xl font-bold">YouChat</h1>
     </div>
-    <p class="text-base-content mb-8 text-xl opacity-80">简易在线互动聊天系统</p>
-    <p class="text-base-content/60 mx-auto max-w-2xl">
+    <p class="text-base-content mb-8 text-center text-xl">简易在线互动聊天系统</p>
+    <p class="text-base-content/60 mx-auto max-w-xl text-center">
       基于 Vue.js + Spring Boot 构建的现代化即时通讯应用，为用户提供稳定、安全、便捷的聊天体验
     </p>
 
@@ -48,10 +48,6 @@ const openRegisterModal = () => {
     </div>
 
     <!-- Auth Modal -->
-    <AuthModal
-      :open="showAuthModal"
-      :default-tab="defaultTab"
-      @close="showAuthModal = false"
-    />
+    <AuthModal :open="showAuthModal" :default-tab="defaultTab" @close="showAuthModal = false" />
   </section>
 </template>
