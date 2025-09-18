@@ -1,5 +1,20 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import AuthModal from '../auth/AuthModal.vue'
+
 // Hero section with title, description, and action buttons
+const showAuthModal = ref(false)
+const defaultTab = ref<'login' | 'register'>('login')
+
+const openLoginModal = () => {
+  defaultTab.value = 'login'
+  showAuthModal.value = true
+}
+
+const openRegisterModal = () => {
+  defaultTab.value = 'register'
+  showAuthModal.value = true
+}
 </script>
 
 <template>
@@ -15,6 +30,7 @@
 
     <div class="mt-12 flex justify-center gap-12">
       <button
+        @click="openLoginModal"
         class="btn btn-primary btn-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
         aria-label="Login"
       >
@@ -22,6 +38,7 @@
         登录
       </button>
       <button
+        @click="openRegisterModal"
         class="btn btn-secondary btn-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
         aria-label="Register"
       >
@@ -29,5 +46,12 @@
         注册
       </button>
     </div>
+
+    <!-- Auth Modal -->
+    <AuthModal
+      :open="showAuthModal"
+      :default-tab="defaultTab"
+      @close="showAuthModal = false"
+    />
   </section>
 </template>
