@@ -122,13 +122,28 @@ The backend requires these environment variables:
 
 ## Frontend Development Requirements
 
-### **MANDATORY** Test-Driven Development (TDD)
+### **Better TDD for Frontend**
 
+- **Philosophy**: Test behavior over implementation, user experience over styling details
 - **Process**: Write failing test → Minimal implementation → Small refactoring
 - **All components must have corresponding test files**
 - Test file naming: `ComponentName.spec.ts`
 - Coverage must include main functionality and edge cases
 - All tests must pass before committing
+
+#### **Unit Testing Focus (Component Logic)**
+
+- **Test what users see**: Text content, interactive elements, structure
+- **Test component behavior**: Click handlers, state changes, user interactions
+- **Use semantic selectors**: `aria-label`, `data-testid`, roles over CSS classes
+- **Avoid implementation details**: Never test CSS class names, internal state, or styling
+
+#### **Component Testability Requirements**
+
+- **Use `data-testid`** for stable element identification
+- **Add `aria-label`** to interactive elements for accessibility and testability
+- **Structure over styling**: Test DOM structure, not visual presentation
+- **Test functionality**: What the component does, not how it looks
 
 ### **STRICT** Coding Standards
 
@@ -169,7 +184,7 @@ The backend requires these environment variables:
 
 ### **Development Workflow Requirements**
 
-- **TDD is Non-Negotiable**: All development must follow test-first approach
+- **Better TDD is Non-Negotiable**: All development must follow behavior-first testing approach
 - **Continuous Testing**: Run tests after every change
 - **Code Quality**: ESLint, Prettier, and regular linting required
 - **Clear commit messages** with all tests passing
@@ -177,7 +192,7 @@ The backend requires these environment variables:
 ### **Accessibility & Security**
 
 - Semantic HTML5 tags
-- Proper ARIA labels
+- Proper ARIA labels (enhances both accessibility and testability)
 - Keyboard navigation support
 - Color contrast compliance
 - Dark mode support
@@ -205,13 +220,35 @@ The backend requires these environment variables:
 
 ## Testing Strategy
 
-### Frontend Testing
+### Frontend Testing Philosophy
 
-- **Unit Tests**: Vitest with jsdom environment
-- **Component Tests**: Vue Test Utils
+**Better TDD Approach**: Test behavior, not implementation. Focus on user experience rather than styling details.
+
+- **Unit Tests (Component Logic)**: Vitest with Vue Test Utils
+  - Focus: Component functionality, user interactions, state management
+  - Avoid: CSS classes, styling details, internal implementation
+  - Use: `aria-label`, `data-testid`, semantic selectors
+
+- **Component Tests**: Structure and behavior verification
+  - Test: What users see and interact with
+  - Verify: Text content, interactive elements, DOM structure
+  - Never: Test visual presentation or CSS properties
+
 - **E2E Tests**: Playwright with multi-browser support
+  - Focus: Complete user workflows, integration testing
+  - Verify: Real user scenarios, cross-browser compatibility
+  - Optional: Visual regression testing (when needed)
+
 - **Coverage**: V8 coverage provider
 - **Test Location**: Co-located with source files (`__tests__/` directories)
+
+#### **Testing Best Practices**
+
+1. **Test User Experience**: What the user sees and does
+2. **Use Stable Selectors**: `data-testid` and `aria-label` over CSS classes
+3. **Test Functionality**: Component behavior over implementation details
+4. **Accessibility First**: Proper ARIA labels improve both a11y and testability
+5. **Avoid Brittleness**: Tests shouldn't break when styling changes
 
 ### Backend Testing
 

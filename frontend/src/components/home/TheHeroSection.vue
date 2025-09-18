@@ -4,7 +4,7 @@
 
 <template>
   <section class="text-center">
-    <div class="mb-6 flex items-center justify-center gap-4">
+    <div class="mb-6 flex items-center justify-center gap-4" data-testid="title-container">
       <i-tabler-message-circle class="text-primary text-6xl" />
       <h1 class="text-primary-content text-6xl font-bold">YouChat</h1>
     </div>
@@ -16,12 +16,14 @@
     <div class="mt-12 flex justify-center gap-12">
       <button
         class="btn btn-primary btn-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+        aria-label="Login"
       >
         <i-tabler-login class="mr-2" />
         登录
       </button>
       <button
         class="btn btn-secondary btn-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+        aria-label="Register"
       >
         <i-tabler-user-plus class="mr-2" />
         注册
