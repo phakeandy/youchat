@@ -9,10 +9,14 @@ const createIconStub = () => ({
 })
 
 describe('FeatureCard', () => {
+  const mockIconComponent = {
+    template: '<span class="icon-component">Icon</span>',
+  }
+
   const mockFeature = {
     title: '即时通讯',
     description: '支持实时文字聊天，消息秒达',
-    icon: 'i-tabler-message-circle',
+    icon: mockIconComponent,
   }
 
   it('should display feature title and description', () => {
@@ -81,16 +85,15 @@ describe('FeatureCard', () => {
   it('should render icon component', () => {
     const wrapper = mount(FeatureCard, {
       props: { feature: mockFeature },
-      global: {
-        stubs: {
-          'i-tabler-message-circle': createIconStub(),
-        },
-      },
     })
 
     const iconContainer = wrapper.find('.text-primary')
     expect(iconContainer.exists()).toBe(true)
     expect(iconContainer.classes()).toContain('text-4xl')
+
+    // 检查图标组件是否被渲染
+    const iconComponent = wrapper.findComponent(mockIconComponent)
+    expect(iconComponent.exists()).toBe(true)
   })
 
   it('should have hover effects', () => {

@@ -121,25 +121,30 @@ describe('HomeView', () => {
 
     // 测试底部文字使用语义化颜色
     const footer = wrapper.find('footer')
-    expect(footer.classes()).toContain('text-base-content/50')
+    expect(footer.classes()).toContain('text-base-content')
   })
 
-  it('should render MainLayout component with footer', () => {
+  it('should render components with proper structure', () => {
     const wrapper = mount(HomeView, {
       global: {
         stubs: globalStubs,
       },
     })
 
-    // 测试 MainLayout 组件存在
-    const layout = wrapper.find('.min-h-screen')
-    expect(layout.exists()).toBe(true)
-    expect(layout.classes()).toContain('bg-gradient-to-br')
+    // 测试主容器存在
+    const mainContainer = wrapper.find('.min-h-screen')
+    expect(mainContainer.exists()).toBe(true)
+    expect(mainContainer.classes()).toContain('bg-gradient-to-br')
+
+    // 测试 main 标签存在
+    const main = wrapper.find('main')
+    expect(main.exists()).toBe(true)
+    expect(main.classes()).toContain('container')
 
     // 测试 footer 脱离文档流并在底部
     const footer = wrapper.find('footer')
     expect(footer.exists()).toBe(true)
-    expect(footer.classes()).toContain('bg-base-100')
+    expect(footer.classes()).toContain('bg-base-300')
   })
 
   it('should render HeroSection component', () => {

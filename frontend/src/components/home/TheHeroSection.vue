@@ -1,3 +1,7 @@
+<script setup lang="ts">
+// Hero section with title, description, and action buttons
+</script>
+
 <template>
   <section class="text-center">
     <div class="mb-6 flex items-center justify-center gap-4">
@@ -11,13 +15,13 @@
 
     <div class="mt-12 flex justify-center gap-12">
       <button
-        class="btn btn-primary btn-lg shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+        class="btn btn-primary btn-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
       >
         <i-tabler-login class="mr-2" />
         登录
       </button>
       <button
-        class="btn btn-secondary btn-lg shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+        class="btn btn-secondary btn-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
       >
         <i-tabler-user-plus class="mr-2" />
         注册
@@ -25,7 +29,3 @@
     </div>
   </section>
 </template>
-
-<script setup lang="ts">
-// Hero section with title, description, and action buttons
-</script>

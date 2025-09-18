@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
-import HeroSection from '../HeroSection.vue'
+import TheHeroSection from '../TheHeroSection.vue'
 
 // 创建图标组件的 stub
 const createIconStub = () => ({
@@ -14,9 +14,9 @@ const globalStubs = {
   'i-tabler-user-plus': createIconStub(),
 }
 
-describe('HeroSection', () => {
+describe('TheHeroSection', () => {
   it('should display YouChat title and subtitle', () => {
-    const wrapper = mount(HeroSection, {
+    const wrapper = mount(TheHeroSection, {
       global: {
         stubs: globalStubs,
       },
@@ -27,7 +27,7 @@ describe('HeroSection', () => {
   })
 
   it('should have login and register buttons', () => {
-    const wrapper = mount(HeroSection, {
+    const wrapper = mount(TheHeroSection, {
       global: {
         stubs: globalStubs,
       },
@@ -42,7 +42,7 @@ describe('HeroSection', () => {
   })
 
   it('should use semantic color classes', () => {
-    const wrapper = mount(HeroSection, {
+    const wrapper = mount(TheHeroSection, {
       global: {
         stubs: globalStubs,
       },
@@ -56,7 +56,7 @@ describe('HeroSection', () => {
   })
 
   it('should have properly styled buttons', () => {
-    const wrapper = mount(HeroSection, {
+    const wrapper = mount(TheHeroSection, {
       global: {
         stubs: globalStubs,
       },
@@ -73,7 +73,7 @@ describe('HeroSection', () => {
   })
 
   it('should have app description', () => {
-    const wrapper = mount(HeroSection, {
+    const wrapper = mount(TheHeroSection, {
       global: {
         stubs: globalStubs,
       },
@@ -84,19 +84,19 @@ describe('HeroSection', () => {
   })
 
   it('should have proper layout spacing', () => {
-    const wrapper = mount(HeroSection, {
+    const wrapper = mount(TheHeroSection, {
       global: {
         stubs: globalStubs,
       },
     })
 
-    const heroContainer = wrapper.find('.mb-16.text-center')
+    const heroContainer = wrapper.find('section')
     expect(heroContainer.exists()).toBe(true)
-    expect(heroContainer.classes()).toContain('mb-16')
+    expect(heroContainer.classes()).toContain('text-center')
   })
 
   it('should have hover effects on buttons', () => {
-    const wrapper = mount(HeroSection, {
+    const wrapper = mount(TheHeroSection, {
       global: {
         stubs: globalStubs,
       },

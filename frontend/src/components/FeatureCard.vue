@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
+
 interface Feature {
   title: string
   description: string
-  icon: string
+  icon: Component
 }
 
 defineProps<{

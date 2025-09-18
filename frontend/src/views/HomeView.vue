@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TheFeatureList from '@/components/home/TheFeatureList.vue'
+import TheFeatureList from '../components/home/TheFeatureList.vue'
 import TheHeroSection from '../components/home/TheHeroSection.vue'
 import TheFooter from '../components/home/TheFooter.vue'
 </script>
@@ -10,7 +10,7 @@ import TheFooter from '../components/home/TheFooter.vue'
       <div class="mb-16">
         <TheHeroSection />
       </div>
-      <div class="container">
+      <div class="mx-auto max-w-4xl">
         <TheFeatureList />
       </div>
     </main>
