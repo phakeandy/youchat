@@ -120,7 +120,52 @@ describe('HomeView', () => {
     })
 
     // 测试底部文字使用语义化颜色
-    const footer = wrapper.find('.mt-16')
+    const footer = wrapper.find('footer')
     expect(footer.classes()).toContain('text-base-content/50')
+  })
+
+  it('should render MainLayout component with footer', () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: globalStubs,
+      },
+    })
+
+    // 测试 MainLayout 组件存在
+    const layout = wrapper.find('.min-h-screen')
+    expect(layout.exists()).toBe(true)
+    expect(layout.classes()).toContain('bg-gradient-to-br')
+
+    // 测试 footer 脱离文档流并在底部
+    const footer = wrapper.find('footer')
+    expect(footer.exists()).toBe(true)
+    expect(footer.classes()).toContain('bg-base-100')
+  })
+
+  it('should render HeroSection component', () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: globalStubs,
+      },
+    })
+
+    // 测试 HeroSection 存在并包含正确内容
+    expect(wrapper.text()).toContain('YouChat')
+    expect(wrapper.text()).toContain('简易在线互动聊天系统')
+    expect(wrapper.text()).toContain('Vue.js + Spring Boot')
+  })
+
+  it('should render FeatureCard components for all features', () => {
+    const wrapper = mount(HomeView, {
+      global: {
+        stubs: globalStubs,
+      },
+    })
+
+    // 测试所有功能特性都被渲染
+    expect(wrapper.text()).toContain('即时通讯')
+    expect(wrapper.text()).toContain('好友管理')
+    expect(wrapper.text()).toContain('群组聊天')
+    expect(wrapper.text()).toContain('文件传输')
   })
 })

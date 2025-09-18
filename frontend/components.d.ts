@@ -8,11 +8,18 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    FeatureCard: typeof import('./src/components/FeatureCard.vue')['default']
+    HeroSection: typeof import('./src/components/HeroSection.vue')['default']
     ITablerAB2: typeof import('~icons/tabler/a-b2')['default']
     ITablerLogin: typeof import('~icons/tabler/login')['default']
     ITablerMessageCircle: typeof import('~icons/tabler/message-circle')['default']
     ITablerUserPlus: typeof import('~icons/tabler/user-plus')['default']
+    Layout: typeof import('./src/components/Layout.vue')['default']
+    MainLayout: typeof import('./src/components/MainLayout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TheFeatureList: typeof import('./src/components/home/TheFeatureList.vue')['default']
+    TheFooter: typeof import('./src/components/home/TheFooter.vue')['default']
+    TheHeroSection: typeof import('./src/components/home/TheHeroSection.vue')['default']
   }
 }
