@@ -33,6 +33,7 @@ describe('LoginForm', () => {
 
       // Invalid email
       await emailInput.setValue('invalid-email')
+      await emailInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(emailInput.classes()).toContain('input-error')
@@ -40,6 +41,7 @@ describe('LoginForm', () => {
 
       // Valid email
       await emailInput.setValue('valid@email.com')
+      await emailInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(emailInput.classes()).not.toContain('input-error')
@@ -50,6 +52,7 @@ describe('LoginForm', () => {
 
       // Short password
       await passwordInput.setValue('123')
+      await passwordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(passwordInput.classes()).toContain('input-error')
@@ -57,6 +60,7 @@ describe('LoginForm', () => {
 
       // Valid password
       await passwordInput.setValue('password123')
+      await passwordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(passwordInput.classes()).not.toContain('input-error')
@@ -73,6 +77,8 @@ describe('LoginForm', () => {
       // Fill valid data
       await emailInput.setValue('test@example.com')
       await passwordInput.setValue('Password123')
+      await emailInput.trigger('blur')
+      await passwordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       // Should be enabled
@@ -88,6 +94,8 @@ describe('LoginForm', () => {
 
       await emailInput.setValue('test@example.com')
       await passwordInput.setValue('Password123')
+      await emailInput.trigger('blur')
+      await passwordInput.trigger('blur')
       await submitButton.trigger('submit')
 
       expect(wrapper.emitted('submit')).toBeTruthy()
@@ -140,6 +148,8 @@ describe('LoginForm', () => {
 
       await emailInput.setValue('test@example.com')
       await passwordInput.setValue('Password123')
+      await emailInput.trigger('blur')
+      await passwordInput.trigger('blur')
       await wrapper.setProps({ submitting: true })
       await wrapper.vm.$nextTick()
 

@@ -35,6 +35,7 @@ describe('RegisterForm', () => {
 
       // Invalid email
       await emailInput.setValue('invalid-email')
+      await emailInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(emailInput.classes()).toContain('input-error')
@@ -42,6 +43,7 @@ describe('RegisterForm', () => {
 
       // Valid email
       await emailInput.setValue('valid@email.com')
+      await emailInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(emailInput.classes()).not.toContain('input-error')
@@ -52,6 +54,7 @@ describe('RegisterForm', () => {
 
       // Too short
       await usernameInput.setValue('a')
+      await usernameInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(usernameInput.classes()).toContain('input-error')
@@ -59,6 +62,7 @@ describe('RegisterForm', () => {
 
       // Too long
       await usernameInput.setValue('a'.repeat(25))
+      await usernameInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(usernameInput.classes()).toContain('input-error')
@@ -66,6 +70,7 @@ describe('RegisterForm', () => {
 
       // Valid
       await usernameInput.setValue('validuser')
+      await usernameInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(usernameInput.classes()).not.toContain('input-error')
@@ -76,6 +81,7 @@ describe('RegisterForm', () => {
 
       // No uppercase
       await passwordInput.setValue('password123')
+      await passwordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(passwordInput.classes()).toContain('input-error')
@@ -83,6 +89,7 @@ describe('RegisterForm', () => {
 
       // No lowercase
       await passwordInput.setValue('PASSWORD123')
+      await passwordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(passwordInput.classes()).toContain('input-error')
@@ -90,6 +97,7 @@ describe('RegisterForm', () => {
 
       // No numbers
       await passwordInput.setValue('Password')
+      await passwordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(passwordInput.classes()).toContain('input-error')
@@ -97,6 +105,7 @@ describe('RegisterForm', () => {
 
       // Valid
       await passwordInput.setValue('Password123')
+      await passwordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(passwordInput.classes()).not.toContain('input-error')
@@ -108,10 +117,12 @@ describe('RegisterForm', () => {
 
       // Fill valid password
       await passwordInput.setValue('Password123')
+      await passwordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       // Mismatched confirmation
       await confirmPasswordInput.setValue('Different123')
+      await confirmPasswordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(confirmPasswordInput.classes()).toContain('input-error')
@@ -119,6 +130,7 @@ describe('RegisterForm', () => {
 
       // Matching confirmation
       await confirmPasswordInput.setValue('Password123')
+      await confirmPasswordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       expect(confirmPasswordInput.classes()).not.toContain('input-error')
@@ -139,6 +151,10 @@ describe('RegisterForm', () => {
       await usernameInput.setValue('testuser')
       await passwordInput.setValue('Password123')
       await confirmPasswordInput.setValue('Password123')
+      await emailInput.trigger('blur')
+      await usernameInput.trigger('blur')
+      await passwordInput.trigger('blur')
+      await confirmPasswordInput.trigger('blur')
       await wrapper.vm.$nextTick()
 
       // Should be enabled
@@ -158,6 +174,10 @@ describe('RegisterForm', () => {
       await usernameInput.setValue('testuser')
       await passwordInput.setValue('Password123')
       await confirmPasswordInput.setValue('Password123')
+      await emailInput.trigger('blur')
+      await usernameInput.trigger('blur')
+      await passwordInput.trigger('blur')
+      await confirmPasswordInput.trigger('blur')
       await submitButton.trigger('submit')
 
       expect(wrapper.emitted('submit')).toBeTruthy()
@@ -234,6 +254,10 @@ describe('RegisterForm', () => {
       await usernameInput.setValue('testuser')
       await passwordInput.setValue('Password123')
       await confirmPasswordInput.setValue('Password123')
+      await emailInput.trigger('blur')
+      await usernameInput.trigger('blur')
+      await passwordInput.trigger('blur')
+      await confirmPasswordInput.trigger('blur')
       await wrapper.setProps({ submitting: true })
       await wrapper.vm.$nextTick()
 
