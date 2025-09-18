@@ -53,55 +53,37 @@ const togglePasswordVisibility = () => {
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-4" data-testid="login-form">
     <!-- Email -->
-    <div>
-      <!-- <label class="label">
-        <span class="flex items-center gap-2">
-          <i-tabler-mail class="h-4 w-4" />
-          邮箱
-        </span>
-      </label>
+    <fieldset class="fieldset">
+      <legend class="fieldset-legend flex items-center gap-2">
+        <i-tabler-mail class="h-4 w-4" />
+        邮箱
+      </legend>
       <input
         v-model="formData.email"
         type="email"
         placeholder="请输入邮箱"
-        class="input input-bordered"
+        class="input"
         :class="{ 'input-error': errors.email }"
         required
         data-testid="login-email"
-      /> -->
-      <label
-        class="input input-bordered flex items-center gap-2"
-        :class="{ 'input-error': errors.email }"
-      >
-        <i-tabler-mail class="h-4 w-4" />
-        <input
-          v-model="formData.email"
-          type="email"
-          class="grow"
-          placeholder="邮箱"
-          required
-          data-testid="login-email"
-        />
-      </label>
+      />
       <label v-if="errors.email" class="label">
-        <span class="-alt text-error">{{ errors.email[0] }}</span>
+        <span class="text-error">{{ errors.email[0] }}</span>
       </label>
-    </div>
+    </fieldset>
 
     <!-- Password -->
-    <div>
-      <label class="label">
-        <span class="flex items-center gap-2">
-          <i-tabler-lock class="h-4 w-4" />
-          密码
-        </span>
-      </label>
+    <fieldset class="fieldset">
+      <legend class="fieldset-legend flex items-center gap-2">
+        <i-tabler-lock class="h-4 w-4" />
+        密码
+      </legend>
       <div class="relative">
         <input
           v-model="formData.password"
           :type="showPassword ? 'text' : 'password'"
           placeholder="请输入密码"
-          class="input input-bordered w-full"
+          class="input w-full"
           :class="{ 'input-error': errors.password }"
           required
           data-testid="login-password"
@@ -118,9 +100,9 @@ const togglePasswordVisibility = () => {
         </button>
       </div>
       <label v-if="errors.password" class="label">
-        <span class="-alt text-error">{{ errors.password[0] }}</span>
+        <span class="text-error">{{ errors.password[0] }}</span>
       </label>
-    </div>
+    </fieldset>
 
     <!-- Submit -->
     <button
