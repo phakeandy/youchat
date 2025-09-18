@@ -1,0 +1,53 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import AuthModal from '../auth/AuthModal.vue'
+
+// Hero section with title, description, and action buttons
+const showAuthModal = ref(false)
+const defaultTab = ref<'login' | 'register'>('login')
+
+const openLoginModal = () => {
+  defaultTab.value = 'login'
+  showAuthModal.value = true
+}
+
+const openRegisterModal = () => {
+  defaultTab.value = 'register'
+  showAuthModal.value = true
+}
+</script>
+
+<template>
+  <section>
+    <div class="mb-6 flex items-center justify-center gap-4" data-testid="title-container">
+      <i-tabler-message-circle class="text-primary text-6xl" />
+      <h1 class="text-primary-content text-6xl font-bold">YouChat</h1>
+    </div>
+    <p class="text-base-content mb-8 text-center text-xl">简易在线互动聊天系统</p>
+    <p class="text-base-content/60 mx-auto max-w-xl text-center">
+      基于 Vue.js + Spring Boot 构建的现代化即时通讯应用，为用户提供稳定、安全、便捷的聊天体验
+    </p>
+
+    <div class="mt-12 flex justify-center gap-12">
+      <button
+        @click="openLoginModal"
+        class="btn btn-primary btn-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+        aria-label="Login"
+      >
+        <i-tabler-login class="mr-2" />
+        登录
+      </button>
+      <button
+        @click="openRegisterModal"
+        class="btn btn-secondary btn-xl shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+        aria-label="Register"
+      >
+        <i-tabler-user-plus class="mr-2" />
+        注册
+      </button>
+    </div>
+
+    <!-- Auth Modal -->
+    <AuthModal :open="showAuthModal" :default-tab="defaultTab" @close="showAuthModal = false" />
+  </section>
+</template>
