@@ -67,9 +67,9 @@ describe('TheHeroSection', () => {
     const registerButton = buttons[1]
 
     expect(loginButton.classes()).toContain('btn-primary')
-    expect(loginButton.classes()).toContain('btn-lg')
+    expect(loginButton.classes()).toContain('btn-xl')
     expect(registerButton.classes()).toContain('btn-secondary')
-    expect(registerButton.classes()).toContain('btn-lg')
+    expect(registerButton.classes()).toContain('btn-xl')
   })
 
   it('should have app description', () => {

@@ -16,6 +16,8 @@ const globalStubs = {
   'i-tabler-upload': createIconStub(),
   'i-tabler-login': createIconStub(),
   'i-tabler-user-plus': createIconStub(),
+  'i-tabler-sun': createIconStub(),
+  'i-tabler-moon': createIconStub(),
 }
 
 describe('HomeView', () => {
@@ -103,8 +105,9 @@ describe('HomeView', () => {
     const title = wrapper.find('h1')
     expect(title.classes()).toContain('text-primary-content')
 
-    // 测试副标题使用语义化颜色
-    const subtitle = wrapper.find('.text-xl')
+    // 测试副标题使用语义化颜色 - 需要更精确地定位 hero section 中的副标题
+    const heroSection = wrapper.find('section')
+    const subtitle = heroSection.find('.text-xl')
     expect(subtitle.classes()).toContain('text-base-content')
 
     // 测试卡片使用语义化背景色
