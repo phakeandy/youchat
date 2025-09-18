@@ -16,6 +16,8 @@ declare module 'vue' {
     ITablerHomePlus: typeof import('~icons/tabler/home-plus')['default']
     ITablerLogin: typeof import('~icons/tabler/login')['default']
     ITablerMessageCircle: typeof import('~icons/tabler/message-circle')['default']
+    ITablerMoon: typeof import('~icons/tabler/moon')['default']
+    ITablerSun: typeof import('~icons/tabler/sun')['default']
     ITablerUpload: typeof import('~icons/tabler/upload')['default']
     ITablerUserPlus: typeof import('~icons/tabler/user-plus')['default']
     ITablerUsers: typeof import('~icons/tabler/users')['default']

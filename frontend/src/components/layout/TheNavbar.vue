@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { useDark, useToggle } from '@vueuse/core'
 
-const isDark = useDark()
+const isDark = useDark({
+  selector: 'html',
+  attribute: 'data-theme',
+  valueDark: 'business',
+  valueLight: 'bumblebee',
+})
 const toggleDark = useToggle(isDark)
 </script>
 
@@ -16,10 +21,8 @@ const toggleDark = useToggle(isDark)
         @click="toggleDark()"
         :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
       >
-        <i
-          :class="isDark ? 'i-tabler-sun text-yellow-500' : 'i-tabler-moon text-blue-500'"
-          class="text-xl"
-        />
+        <i-tabler-sun v-if="isDark" class="text-xl text-yellow-500" />
+        <i-tabler-moon v-else class="text-xl text-blue-500" />
       </button>
     </div>
   </div>
