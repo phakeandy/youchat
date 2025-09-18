@@ -30,7 +30,12 @@ const features = [
 </script>
 
 <template>
-  <div class="mb-16 grid gap-6 md:grid-cols-2">
-    <FeatureCard v-for="feature in features" :key="feature.title" :feature="feature" />
+  <div class="mb-16 grid gap-6 md:grid-cols-2" data-testid="feature-list">
+    <FeatureCard
+      v-for="feature in features"
+      :key="feature.title"
+      :feature="feature"
+      :data-testid="`feature-card-${feature.title}`"
+    />
   </div>
 </template>

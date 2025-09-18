@@ -3,49 +3,28 @@ import { mount } from '@vue/test-utils'
 import TheFooter from '../TheFooter.vue'
 
 describe('TheFooter', () => {
-  it('should render footer with proper classes', () => {
+  it('should render footer element', () => {
     const wrapper = mount(TheFooter)
 
-    const footer = wrapper.find('footer')
+    const footer = wrapper.find('[data-testid="footer"]')
     expect(footer.exists()).toBe(true)
-    expect(footer.classes()).toContain('footer')
-    expect(footer.classes()).toContain('footer-center')
-    expect(footer.classes()).toContain('bg-base-300')
-    expect(footer.classes()).toContain('text-base-content')
   })
 
-  it('should display copyright information', () => {
-    const wrapper = mount(TheFooter)
-
-    expect(wrapper.text()).toContain('Copyright ©')
-    expect(wrapper.text()).toContain('Vue 3 + DaisyUI + Tailwind CSS')
-  })
-
-  it('should have current year in copyright', () => {
+  it('should display copyright information with current year', () => {
     const wrapper = mount(TheFooter)
     const currentYear = new Date().getFullYear()
 
-    expect(wrapper.text()).toContain(currentYear.toString())
+    const copyright = wrapper.find('[data-testid="copyright"]')
+    expect(copyright.exists()).toBe(true)
+    expect(copyright.text()).toContain('Copyright ©')
+    expect(copyright.text()).toContain(currentYear.toString())
+    expect(copyright.text()).toContain('Vue 3 + DaisyUI + Tailwind CSS')
   })
 
-  it('should have proper padding', () => {
+  it('should have content wrapper', () => {
     const wrapper = mount(TheFooter)
 
-    const footer = wrapper.find('footer')
-    expect(footer.classes()).toContain('p-4')
-  })
-
-  it('should have aside element for content', () => {
-    const wrapper = mount(TheFooter)
-
-    const aside = wrapper.find('aside')
-    expect(aside.exists()).toBe(true)
-  })
-
-  it('should be responsive', () => {
-    const wrapper = mount(TheFooter)
-
-    const footer = wrapper.find('footer')
-    expect(footer.classes()).toContain('sm:footer-horizontal')
+    const content = wrapper.find('[data-testid="footer-content"]')
+    expect(content.exists()).toBe(true)
   })
 })

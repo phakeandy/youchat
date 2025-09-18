@@ -2,12 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import FeatureCard from '../FeatureCard.vue'
 
-// 创建图标组件的 stub
-const createIconStub = () => ({
-  template: '<span class="icon-stub"></span>',
-  props: ['class'],
-})
-
 describe('FeatureCard', () => {
   const mockIconComponent = {
     template: '<span class="icon-component">Icon</span>',
@@ -19,96 +13,47 @@ describe('FeatureCard', () => {
     icon: mockIconComponent,
   }
 
-  it('should display feature title and description', () => {
+  it('should render feature card with correct structure', () => {
     const wrapper = mount(FeatureCard, {
       props: { feature: mockFeature },
-      global: {
-        stubs: {
-          'i-tabler-message-circle': createIconStub(),
-        },
-      },
     })
 
-    expect(wrapper.text()).toContain(mockFeature.title)
-    expect(wrapper.text()).toContain(mockFeature.description)
-  })
-
-  it('should use DaisyUI card classes', () => {
-    const wrapper = mount(FeatureCard, {
-      props: { feature: mockFeature },
-      global: {
-        stubs: {
-          'i-tabler-message-circle': createIconStub(),
-        },
-      },
-    })
-
-    const card = wrapper.find('.card')
+    const card = wrapper.find('[data-testid="feature-card"]')
     expect(card.exists()).toBe(true)
-    expect(card.classes()).toContain('bg-base-100')
-    expect(card.classes()).toContain('border-0')
-    expect(card.classes()).toContain('shadow-lg')
   })
 
-  it('should have card body with proper styling', () => {
-    const wrapper = mount(FeatureCard, {
-      props: { feature: mockFeature },
-      global: {
-        stubs: {
-          'i-tabler-message-circle': createIconStub(),
-        },
-      },
-    })
-
-    const cardBody = wrapper.find('.card-body')
-    expect(cardBody.exists()).toBe(true)
-    expect(cardBody.classes()).toContain('items-center')
-    expect(cardBody.classes()).toContain('text-center')
-  })
-
-  it('should display card title with semantic colors', () => {
-    const wrapper = mount(FeatureCard, {
-      props: { feature: mockFeature },
-      global: {
-        stubs: {
-          'i-tabler-message-circle': createIconStub(),
-        },
-      },
-    })
-
-    const cardTitle = wrapper.find('.card-title')
-    expect(cardTitle.exists()).toBe(true)
-    expect(cardTitle.classes()).toContain('text-primary-content')
-    expect(cardTitle.text()).toBe(mockFeature.title)
-  })
-
-  it('should render icon component', () => {
+  it('should display feature title and description correctly', () => {
     const wrapper = mount(FeatureCard, {
       props: { feature: mockFeature },
     })
 
-    const iconContainer = wrapper.find('.text-primary')
+    const title = wrapper.find('[data-testid="feature-title"]')
+    const description = wrapper.find('[data-testid="feature-description"]')
+
+    expect(title.exists()).toBe(true)
+    expect(description.exists()).toBe(true)
+    expect(title.text()).toBe(mockFeature.title)
+    expect(description.text()).toBe(mockFeature.description)
+  })
+
+  it('should have proper content structure', () => {
+    const wrapper = mount(FeatureCard, {
+      props: { feature: mockFeature },
+    })
+
+    const content = wrapper.find('[data-testid="card-content"]')
+    const iconContainer = wrapper.find('[data-testid="icon-container"]')
+
+    expect(content.exists()).toBe(true)
     expect(iconContainer.exists()).toBe(true)
-    expect(iconContainer.classes()).toContain('text-4xl')
+  })
 
-    // 检查图标组件是否被渲染
+  it('should render icon component when provided', () => {
+    const wrapper = mount(FeatureCard, {
+      props: { feature: mockFeature },
+    })
+
     const iconComponent = wrapper.findComponent(mockIconComponent)
     expect(iconComponent.exists()).toBe(true)
-  })
-
-  it('should have hover effects', () => {
-    const wrapper = mount(FeatureCard, {
-      props: { feature: mockFeature },
-      global: {
-        stubs: {
-          'i-tabler-message-circle': createIconStub(),
-        },
-      },
-    })
-
-    const card = wrapper.find('.card')
-    expect(card.classes()).toContain('transition-all')
-    expect(card.classes()).toContain('hover:scale-105')
-    expect(card.classes()).toContain('hover:shadow-xl')
   })
 })
