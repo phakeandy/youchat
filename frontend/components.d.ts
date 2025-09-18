@@ -28,6 +28,7 @@ declare module 'vue' {
     TheFeatureList: typeof import('./src/components/home/TheFeatureList.vue')['default']
     TheFooter: typeof import('./src/components/home/TheFooter.vue')['default']
     TheHeroSection: typeof import('./src/components/home/TheHeroSection.vue')['default']
+    TheNavbar: typeof import('./src/components/layout/TheNavbar.vue')['default']
     Upload: typeof import('./src/components/icons/Upload.vue')['default']
     UploadIcon: typeof import('./src/components/icons/UploadIcon.vue')['default']
     Users: typeof import('./src/components/icons/Users.vue')['default']
