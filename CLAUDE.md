@@ -179,6 +179,71 @@ The backend requires these environment variables:
 - **Spotless**: Code formatting and import ordering
 - **All quality tools must pass** before merging
 
+#### **Spring Security 8.x Best Practices**
+
+- **Use latest Spring Security 6.x APIs** (compatible with Spring Boot 3.5.5):
+  - Use `UsernamePasswordAuthenticationToken.unauthenticated()` for creating unauthenticated tokens
+  - Implement thread-safe context management with `SecurityContextHolderStrategy`
+  - Manage session storage through `SecurityContextRepository`
+  - Access authenticated user information with `@AuthenticationPrincipal` annotation
+
+- **Authentication Flow Standardization**:
+  - Controller layer: Receive requests, validate input, call authentication manager
+  - Service layer: Implement `UserDetailsService` and `AuthenticationProvider`
+  - Configuration layer: Use `HttpSecurity` for security configuration
+  - Exception handling: Customize `AuthenticationEntryPoint` and `AccessDeniedHandler`
+
+- **Session Management**:
+  - Use Spring Session + Redis for distributed session management
+  - Configure appropriate session timeout and concurrency control
+  - Implement session fixation protection
+
+#### **Controller Layer Data Transfer Standards**
+
+- **DTO/VO Usage Requirement**: All controller input parameters and output responses must be encapsulated using DTO/VO objects
+  - **Input DTOs**: Use `FooRequest.java` naming convention (e.g., `LoginRequest.java`, `CreateUserRequest.java`)
+  - **Output VOs**: Use `FooResponse.java` naming convention (e.g., `LoginResponse.java`, `UserInfoResponse.java`)
+  - **Strict Prohibition**: Never use raw `Map<String, Object>` for request/response data transfer
+
+- **DTO Design Principles**:
+  - Use proper validation annotations (`@NotNull`, `@Size`, `@Email`, etc.)
+  - Implement proper serialization/deserialization with Jackson annotations
+  - Keep DTOs simple and focused on data transfer only
+  - Use immutable objects where possible (final fields, builders)
+
+- **VO Design Principles**:
+  - Structure responses consistently across all endpoints
+  - Include metadata like timestamps, status codes, and pagination info
+  - Implement proper error response structures
+
+#### **MyBatis Best Practices**
+
+- **Code Generator Configuration**:
+  - MyBatis Generator generates code to `target/generated-sources/mybatis-generator`
+  - No need to manually create mapper folders in `src`
+  - Use `build-helper-maven-plugin` to automatically add generated sources to compilation path
+
+- **Dynamic SQL Usage**:
+  - Prioritize MyBatis Dynamic SQL for type-safe query building
+  - Avoid handwritten SQL strings, use `SqlBuilder` and `StatementBuilder`
+  - Leverage `@SelectProvider` and `@UpdateProvider` annotations
+
+#### **Lombok Configuration**
+
+- **Lombok is configured**: No need to manually write getter, setter, toString methods
+- **Common annotations**:
+  - `@Data`: Auto-generate all common methods
+  - `@RequiredArgsConstructor`: Generate final field constructor
+  - `@Slf4j`: Auto-generate log field
+  - `@Builder`: Support builder pattern
+
+#### **Testing Strategy Enhancement**
+
+- **Unit Tests**: Use Mockito for dependency isolation, JsonPath for JSON response validation
+- **Integration Tests**: Use Testcontainers for real PostgreSQL database testing instead of H2 in-memory database
+- **Test Data Management**: Use `@Transactional` to ensure test isolation with automatic rollback
+- **API Testing**: Use MockMvc for RESTful endpoint testing, avoid string comparison
+
 #### **RESTful API Standards**
 
 - **Follow REST conventions**: Use proper HTTP methods and status codes

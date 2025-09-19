@@ -1,5 +1,7 @@
 package top.phakeandy.youchat.auth;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Authentication", description = "认证接口")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationController {
@@ -33,6 +36,7 @@ public class AuthenticationController {
   private final SecurityContextHolderStrategy securityContextHolderStrategy;
 
   @PostMapping("/login")
+  @Operation(summary = "用户登录")
   public ResponseEntity<Map<String, Object>> login(
       @RequestBody Map<String, String> credentials,
       HttpServletRequest request,
@@ -118,6 +122,7 @@ public class AuthenticationController {
   }
 
   @GetMapping("/me")
+  @Operation(summary = "获取当前用户信息")
   public ResponseEntity<Map<String, Object>> getCurrentUser(
       @AuthenticationPrincipal Authentication authentication) {
     if (authentication == null || !authentication.isAuthenticated()) {

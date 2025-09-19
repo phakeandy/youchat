@@ -274,9 +274,6 @@
 							<style>GOOGLE</style>
 						</googleJavaFormat>
 						<removeUnusedImports />
-						<!-- <importOrder>
-							<order>java,javax,org,com,top.phakeandy</order>
-						</importOrder> -->
 					</java>
 				</configuration>
 				<executions>
