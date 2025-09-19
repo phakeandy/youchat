@@ -116,36 +116,6 @@ public class AuthenticationController {
     }
   }
 
-  // @PostMapping("/logout")
-  // public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request,
-  // HttpServletResponse response) {
-  // try {
-  // // Clear security context
-  // SecurityContext context = securityContextHolderStrategy.getContext();
-  // if (context != null && context.getAuthentication() != null) {
-  // String username = context.getAuthentication().getName();
-  // log.info("User {} logging out", username);
-  // }
-
-  // // Clear the security context
-  // securityContextHolderStrategy.clearContext();
-
-  // // Save empty context to repository (clears session)
-  // securityContextRepository.saveContext(securityContextHolderStrategy.createEmptyContext(),
-  // request, response);
-
-  // return ResponseEntity
-  // .ok(Map.of("message", "Logout successful", "timestamp",
-  // System.currentTimeMillis()));
-
-  // } catch (Exception e) {
-  // log.error("Error during logout", e);
-  // return
-  // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message",
-  // "An error occurred during logout", "timestamp", System.currentTimeMillis()));
-  // }
-  // }
-
   @GetMapping("/me")
   public ResponseEntity<Map<String, Object>> getCurrentUser(
       @AuthenticationPrincipal Authentication authentication) {
