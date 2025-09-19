@@ -4,13 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Map;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,107 +35,51 @@ public class AuthenticationController {
 
   @PostMapping("/login")
   @Operation(summary = "用户登录")
-  public ResponseEntity<Map<String, Object>> login(
-      @RequestBody Map<String, String> credentials,
+  public ResponseEntity<LoginResponse> login(
+      @Valid @RequestBody LoginRequest loginRequest,
       HttpServletRequest request,
       HttpServletResponse response) {
-    try {
-      // Validate input
-      String username = credentials.get("username");
-      String password = credentials.get("password");
 
-      if (username == null
-          || username.trim().isEmpty()
-          || password == null
-          || password.trim().isEmpty()) {
-        return ResponseEntity.badRequest()
-            .body(
-                Map.of(
-                    "message",
-                    "Username and password are required",
-                    "authenticated",
-                    false,
-                    "timestamp",
-                    System.currentTimeMillis()));
-      }
+    // Create authentication token
+    UsernamePasswordAuthenticationToken authenticationToken =
+        UsernamePasswordAuthenticationToken.unauthenticated(
+            loginRequest.username(), loginRequest.password());
 
-      // Create authentication token
-      UsernamePasswordAuthenticationToken authenticationToken =
-          UsernamePasswordAuthenticationToken.unauthenticated(username, password);
+    // Authenticate
+    Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-      // Authenticate
-      Authentication authentication = authenticationManager.authenticate(authenticationToken);
+    // Create security context
+    SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+    context.setAuthentication(authentication);
 
-      // Create security context
-      SecurityContext context = securityContextHolderStrategy.createEmptyContext();
-      context.setAuthentication(authentication);
+    // Set security context
+    securityContextHolderStrategy.setContext(context);
 
-      // Set security context
-      securityContextHolderStrategy.setContext(context);
+    // Save security context to repository (session)
+    securityContextRepository.saveContext(context, request, response);
 
-      // Save security context to repository (session)
-      securityContextRepository.saveContext(context, request, response);
+    // Get authenticated user details
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-      // Get authenticated user details
-      UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    log.info("User {} logged in successfully", loginRequest.username());
 
-      log.info("User {} logged in successfully", username);
-
-      return ResponseEntity.ok(
-          Map.of(
-              "message",
-              "Login successful",
-              "authenticated",
-              true,
-              "username",
-              userDetails.getUsername(),
-              "authorities",
-              userDetails.getAuthorities(),
-              "timestamp",
-              System.currentTimeMillis()));
-
-    } catch (BadCredentialsException e) {
-      log.warn("Login failed for user {}: {}", credentials.get("username"), e.getMessage());
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(
-              Map.of(
-                  "message",
-                  "Authentication failed: " + e.getMessage(),
-                  "authenticated",
-                  false,
-                  "timestamp",
-                  System.currentTimeMillis()));
-    } catch (Exception e) {
-      log.error("Unexpected error during login for user {}", credentials.get("username"), e);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(
-              Map.of(
-                  "message",
-                  "An unexpected error occurred during authentication",
-                  "authenticated",
-                  false,
-                  "timestamp",
-                  System.currentTimeMillis()));
-    }
+    return ResponseEntity.ok(
+        new LoginResponse(userDetails.getUsername(), userDetails.getAuthorities()));
   }
 
   @GetMapping("/me")
   @Operation(summary = "获取当前用户信息")
-  public ResponseEntity<Map<String, Object>> getCurrentUser(
+  public ResponseEntity<UserResponse> getCurrentUser(
       @AuthenticationPrincipal Authentication authentication) {
+
     if (authentication == null || !authentication.isAuthenticated()) {
-      return ResponseEntity.ok(Map.of("authenticated", false, "message", "Not authenticated"));
+      throw new org.springframework.security.authentication
+          .AuthenticationCredentialsNotFoundException("用户未认证");
     }
 
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
     return ResponseEntity.ok(
-        Map.of(
-            "authenticated",
-            true,
-            "username",
-            userDetails.getUsername(),
-            "authorities",
-            userDetails.getAuthorities()));
+        new UserResponse(userDetails.getUsername(), userDetails.getAuthorities()));
   }
 }

@@ -53,9 +53,11 @@ cd backend
 
 # Development
 ./mvnw clean install    # Clean and install dependencies
+source .envrc && ./mvnw mybatis-generator:generate # Generate MyBatis 需要的样板代码，注意在你运行 clean 之后需要首先运行这个命令
+docker compose up -d    # 项目配置了 spring docker compose support，但有时候可能还是需要手动运行 docker
 
 # Code Quality Tools
-./mvnw spotless:apply   # Format code with Google Java Format
+./mvnw spotless:apply   # Format code with Google Java Format, 可以去除 Unused imports，和 import order
 ./mvnw checkstyle:check # Run Checkstyle validation
 ./mvnw pmd:check        # Run PMD static analysis
 ./mvnw spotbugs:check   # Run SpotBugs security analysis
@@ -164,20 +166,13 @@ The backend requires these environment variables:
 
 ### **STRICT** Coding Standards
 
-#### **Java Code Format (NON-NEGOTIABLE)**
-
-- **Google Java Format**: All code must be formatted with Google Java Style
-- **Use `./mvnw spotless:apply`** to format code before committing
-- **No manual formatting deviations allowed**
-- **Import order**: Standard Java order (java, javax, org, com, project packages)
-
 #### **Code Quality Requirements**
 
 - **Checkstyle**: Google Java Style compliance
 - **PMD**: Static code analysis for code quality and best practices
 - **SpotBugs**: Bytecode analysis for bug detection
 - **Spotless**: Code formatting and import ordering
-- **All quality tools must pass** before merging
+- **All quality tools must pass** before 你标记提示我的这个需求完成了
 
 #### **Spring Security 8.x Best Practices**
 
@@ -200,28 +195,30 @@ The backend requires these environment variables:
 
 #### **Controller Layer Data Transfer Standards**
 
+“廋” Contrller “胖” Service 原则：不要编写复杂的 Controller，Controller 的指责应该尽量单一（接收HTTP请求，解析请求参数（路径变量、查询参数、请求体等）。），更多的业务逻辑应该在 Service 层处理。
+
 - **DTO/VO Usage Requirement**: All controller input parameters and output responses must be encapsulated using DTO/VO objects
   - **Input DTOs**: Use `FooRequest.java` naming convention (e.g., `LoginRequest.java`, `CreateUserRequest.java`)
   - **Output VOs**: Use `FooResponse.java` naming convention (e.g., `LoginResponse.java`, `UserInfoResponse.java`)
   - **Strict Prohibition**: Never use raw `Map<String, Object>` for request/response data transfer
 
-- **DTO Design Principles**:
-  - Use proper validation annotations (`@NotNull`, `@Size`, `@Email`, etc.)
-  - Implement proper serialization/deserialization with Jackson annotations
-  - Keep DTOs simple and focused on data transfer only
-  - Use immutable objects where possible (final fields, builders)
-
-- **VO Design Principles**:
-  - Structure responses consistently across all endpoints
-  - Include metadata like timestamps, status codes, and pagination info
-  - Implement proper error response structures
+- **Use Java records for all DTOs and VOs (NON-NEGOTIABLE)**.
+  - **Rationale**: record classes are the modern standard for immutable data carriers in Java. They enforce immutability, significantly reduce boilerplate code, and provide canonical equals(), hashCode(), and toString() implementations out of the box.
+  - **Strict Prohibition**: The use of traditional Lombok-annotated classes (@Data, @Builder) for DTOs/VOs is now **DEPRECATED** in this project. Only use them if a record is fundamentally incompatible with a required library feature (a rare exception that must be justified).
+  - All Request and Response objects must be defined as record.
+  - **Use Validation Annotations**: Input DTOs (\*Request.java) must use Jakarta Validation annotations (@NotNull, @Size, @Email, etc.) for declarative validation.
+  - **Serialization with Jackson**: Records work seamlessly with Jackson for JSON serialization/deserialization. Use @JsonProperty only when the desired JSON key name differs from the record component name.
+  - **Keep DTOs/VOs Simple**: Records should only contain data and potentially compact constructors for validation or normalization. Business logic belongs in service layers.
 
 - **API Response Standard**:
   - Semantic HTTP Status Codes (**NON-NEGOTIABLE**)
   - **Anti-Pattern Prohibition**: The use of a generic wrapper object (e.g., ApiResponse<T>, ResultDTO<T>) that always returns an HTTP 200 OK status, with the real status code hidden inside the JSON body, is STRICTLY PROHIBITED. 
   - No Manual Error Handling in Controllers: Controllers MUST NOT contain try-catch blocks for business logic exceptions or manually construct error responses (e.g., return ResponseEntity.badRequest(...)). This clutters the controller and leads to inconsistent error handling.
   - Throw Custom Exceptions: Business logic errors from the service layer MUST be signaled by throwing specific, descriptive custom exceptions (e.g., ResourceNotFoundException, DuplicateEmailException).
-  - Global Exception Handler: All custom exceptions MUST be handled in a centralized @RestControllerAdvice component. This ensures separation of concerns and consistent error responses across the entire application. Standardized Error Format (**CRITICAL**): All error responses for client-facing errors (4xx and 5xx status codes) MUST conform to the RFC 7807 "Problem Details for HTTP APIs" standard. Spring Boot has native support for this, which must be enabled and utilized.
+  - Global Exception Handler: All custom exceptions MUST be handled in a centralized `@RestControllerAdvice` component. This ensures separation of concerns and consistent error responses across the entire application. Standardized Error Format (**CRITICAL**): All error responses for client-facing errors (4xx and 5xx status codes) MUST conform to the RFC 7807 "Problem Details for HTTP APIs" standard. Spring Boot has native support for this, which must be enabled and utilized.
+  - 返回给用户的错误消息，如果你认为会在前端展示，那么就填写中文，不要用英文。比如：
+    - 错误实践：`@NotBlank(message = "Username is required") private String username;`
+    - 正确实践：`@NotBlank(message = "用户名不能为空") private String username;`
 
 #### **MyBatis Best Practices**
 
@@ -421,7 +418,7 @@ The backend requires these environment variables:
 
 ### Backend Testing Strategy
 
-**Better TDD Approach**: Test-driven development with comprehensive coverage and quality gates.
+**Better TDD Approach**: 记住拿到一个需求，先创建或者更新测试再更新实现
 
 #### **Unit Tests (JUnit 5 + Mockito)**
 
@@ -492,11 +489,13 @@ youchat/
 │   ├── src/           # Java source code
 │   │   ├── main/      # Main application code
 │   │   └── test/      # Test code
+├   ├── compose.yml    # Docker compose file for development
 │   └── pom.xml        # Maven dependencies and configuration
 ├── src/               # Shared resources (mainly tests)
 ├── docs/              # Project documentation
 │   ├── database.md    # Database schema and ER diagram
 │   └── technical-selection-report.md # Technology choices
+├── .envrc             # Environment variables，包含数据库连接信息等等
 └── README.md          # Project overview
 ```
 
