@@ -53,6 +53,13 @@ cd backend
 
 # Development
 ./mvnw clean install    # Clean and install dependencies
+
+# Code Quality Tools
+./mvnw spotless:apply   # Format code with Google Java Format
+./mvnw checkstyle:check # Run Checkstyle validation
+./mvnw pmd:check        # Run PMD static analysis
+./mvnw spotbugs:check   # Run SpotBugs security analysis
+./mvnw verify           # Run all quality checks and tests
 ```
 
 ## Key Technologies & Dependencies
@@ -69,13 +76,15 @@ cd backend
 
 ### Backend Stack
 
-- **Framework**: Spring Boot 3.5.5
+- **Framework**: Spring Boot 3.5.5 with Spring Security and Spring Session
 - **Language**: Java 21
+- **Architecture**: RESTful API with前后端分离
 - **Database**: PostgreSQL with Flyway migrations
-- **ORM**: MyBatis 3.0.5 with MyBatis Dynamic SQL
+- **ORM**: MyBatis 3.0.5 with MyBatis Dynamic SQL (NOT JPA)
 - **Session Management**: Redis with Spring Session
 - **Documentation**: SpringDoc OpenAPI 2.8.13
 - **Build Tool**: Maven
+- **Code Quality**: Google Java Format, Checkstyle, PMD, SpotBugs, Spotless
 
 ## Database Architecture
 
@@ -119,6 +128,88 @@ The backend requires these environment variables:
 - Database migrations are handled by Flyway
 - Schema is defined in `docs/database.md` with ER diagram
 - SQL formatting should use SQLFluff
+
+## Backend Development Requirements
+
+### **Better TDD for Backend**
+
+- **Philosophy**: Test-driven development with failing tests first
+- **Process**: Write failing test → Minimal implementation → Refactor
+- **All production code must have corresponding tests**
+- Test file naming: `ClassNameTest.java`
+- Coverage must include business logic, edge cases, and API endpoints
+- All tests and quality checks must pass before committing
+
+#### **Testing Strategy**
+
+- **Unit Tests**: JUnit 5 with Mockito for isolated component testing
+- **Slice Tests**: Spring Boot test slices (`@WebMvcTest`, `@DataJpaTest`, `@WebFluxTest`)
+- **Integration Tests**: `@SpringBootTest` with Testcontainers for full stack testing
+- **API Tests**: RESTful endpoint testing with MockMvc and structured assertions
+
+#### **RESTful API Testing Requirements**
+
+- **Use JsonPath for JSON response validation** - NEVER test string equality
+- **Test status codes, headers, and response structure**
+- **Use `@MockBean` for dependency isolation in slice tests**
+- **Test error scenarios and edge cases**
+- **Avoid testing implementation details, focus on API contracts**
+
+#### **Database Testing**
+
+- **Unit Tests**: H2 in-memory database for fast testing
+- **Integration Tests**: Testcontainers with PostgreSQL for realistic testing
+- **Use `@Transactional` for test isolation**
+- **Test MyBatis mapper SQL queries and data access logic**
+
+### **STRICT** Coding Standards
+
+#### **Java Code Format (NON-NEGOTIABLE)**
+
+- **Google Java Format**: All code must be formatted with Google Java Style
+- **Use `./mvnw spotless:apply`** to format code before committing
+- **No manual formatting deviations allowed**
+- **Import order**: Standard Java order (java, javax, org, com, project packages)
+
+#### **Code Quality Requirements**
+
+- **Checkstyle**: Google Java Style compliance
+- **PMD**: Static code analysis for code quality and best practices
+- **SpotBugs**: Bytecode analysis for bug detection
+- **Spotless**: Code formatting and import ordering
+- **All quality tools must pass** before merging
+
+#### **RESTful API Standards**
+
+- **Follow REST conventions**: Use proper HTTP methods and status codes
+- **JSON responses**: Consistent response structure with proper content types
+- **Error handling**: Standardized error response format
+- **API versioning**: Version all endpoints for backwards compatibility
+- **Documentation**: OpenAPI/Swagger documentation for all endpoints
+
+#### **Security Standards**
+
+- **Spring Security**: Proper authentication and authorization
+- **Input validation**: Validate all user inputs
+- **SQL injection prevention**: Use MyBatis parameterized queries
+- **Sensitive data**: Never log sensitive information
+- **CORS configuration**: Proper cross-origin resource sharing
+
+### **Development Workflow Requirements**
+
+- **TDD is Mandatory**: Write tests before production code
+- **Continuous Integration**: Run quality checks on every commit
+- **Code Review**: All changes must pass quality gate checks
+- **Test Coverage**: Maintain high test coverage for business logic
+- **Documentation**: Keep API documentation synchronized with code
+
+### **Anti-Patterns to Avoid**
+
+- **Testing JSON string equality**: Use JsonPath assertions instead
+- **Bypassing quality tools**: All tools must pass before committing
+- **Skipping tests**: All tests must pass in clean environment
+- **Hardcoding values**: Use constants and configuration properties
+- **Ignoring security best practices**: Follow Spring Security guidelines
 
 ## Frontend Development Requirements
 
@@ -212,11 +303,17 @@ The backend requires these environment variables:
 
 ### Backend
 
-- Use Lombok for boilerplate reduction
-- Follow Spring Boot best practices
-- Use MyBatis Dynamic SQL for database operations
-- Document APIs with SpringDoc OpenAPI
-- Follow Java 21 features and conventions
+- **Google Java Format**: Code formatting with Spotless
+- **Checkstyle**: Google Java Style compliance and best practices
+- **PMD**: Static analysis for code quality and complexity
+- **SpotBugs**: Security-focused static analysis with FindSecBugs
+- **Lombok**: Reduce boilerplate code generation
+- **Spring Boot Best Practices**: Convention over configuration
+- **MyBatis Dynamic SQL**: Type-safe SQL operations (NOT JPA)
+- **SpringDoc OpenAPI**: API documentation and testing
+- **Java 21 Features**: Modern Java language features and patterns
+- **Security**: Spring Security with proper authentication/authorization
+- **Testing**: JUnit 5, Mockito, Spring Boot Test, Testcontainers
 
 ## Testing Strategy
 
@@ -250,11 +347,63 @@ The backend requires these environment variables:
 4. **Accessibility First**: Proper ARIA labels improve both a11y and testability
 5. **Avoid Brittleness**: Tests shouldn't break when styling changes
 
-### Backend Testing
+### Backend Testing Strategy
 
-- **Unit Tests**: JUnit 5 with Spring Boot Test
-- **Integration Tests**: Spring Boot Test with Testcontainers
-- **Database Tests**: @DataJpaTest with H2 in-memory database
+**Better TDD Approach**: Test-driven development with comprehensive coverage and quality gates.
+
+#### **Unit Tests (JUnit 5 + Mockito)**
+
+- **Focus**: Business logic, service layers, utilities
+- **Mocking**: Use Mockito for dependency isolation
+- **Assertions**: Use AssertJ for fluent assertions
+- **Coverage**: Target 80%+ coverage for business logic
+- **Test naming**: `should_expectedBehavior_when_condition()`
+
+#### **Slice Tests (Spring Boot Test Slices)**
+
+- **`@WebMvcTest`**: Test web layer with MockMvc
+  - Test RESTful endpoints without full application context
+  - Use `@MockBean` for service layer mocking
+  - Validate HTTP status, headers, and JSON responses with JsonPath
+- **`@DataJpaTest`**: Test data access layer
+  - Test MyBatis mappers and database operations
+  - Use H2 in-memory database for fast testing
+  - Test CRUD operations and query logic
+
+#### **Integration Tests (Testcontainers)**
+
+- **Full stack testing** with real PostgreSQL and Redis containers
+- **Test complete workflows** across multiple layers
+- **Environment-specific testing** with production-like setup
+- **Performance and scalability** testing
+
+#### **API Testing Best Practices**
+
+- **Use JsonPath for JSON assertions**:
+  ```java
+  mockMvc.perform(get("/api/users"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.data[*].id").exists())
+      .andExpect(jsonPath("$.data[0].name").value("John Doe"));
+  ```
+- **Test HTTP status codes**: 200, 201, 400, 401, 404, 500
+- **Test response headers**: Content-Type, Location, etc.
+- **Test error scenarios**: Invalid inputs, authentication failures
+- **Test pagination and filtering**: For list endpoints
+
+#### **Database Testing**
+
+- **MyBatis Mapper Testing**: Test SQL queries and data mapping
+- **Transaction Rollback**: Use `@Transactional` for test isolation
+- **Test Data Management**: Use test data builders or fixtures
+- **Schema Validation**: Test Flyway migrations in integration tests
+
+#### **Security Testing**
+
+- **Authentication Testing**: Test login/logout flows
+- **Authorization Testing**: Test role-based access control
+- **Input Validation**: Test parameter validation and sanitization
+- **Security Headers**: Test CORS, CSRF, and other security headers
 
 ## Project Structure
 
