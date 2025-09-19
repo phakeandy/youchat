@@ -46,13 +46,13 @@ pnpm format           # Format code with Prettier
 cd backend
 
 # Standard Maven commands
-mvn clean compile     # Compile the project
-mvn test             # Run tests
-mvn package          # Create JAR
-mvn spring-boot:run  # Run the application
+./mvnw clean compile     # Compile the project
+./mvnw test             # Run tests
+./mvnw package          # Create JAR
+./mvnw spring-boot:run  # Run the application
 
 # Development
-mvn clean install    # Clean and install dependencies
+./mvnw clean install    # Clean and install dependencies
 ```
 
 ## Key Technologies & Dependencies

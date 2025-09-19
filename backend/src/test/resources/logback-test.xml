@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console appender for tests -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Quiet down most Spring Boot logging -->
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.springframework.boot" level="ERROR"/>
+    <logger name="org.springframework.test" level="ERROR"/>
+    <logger name="org.springframework.web" level="ERROR"/>
+
+    <!-- Quiet down database logging -->
+    <logger name="org.hibernate" level="ERROR"/>
+    <logger name="org.flywaydb" level="ERROR"/>
+    <logger name="org.mybatis" level="ERROR"/>
+    <logger name="com.zaxxer.hikari" level="ERROR"/>
+
+    <!-- Quiet down actuator and monitoring -->
+    <logger name="org.springframework.boot.actuator" level="ERROR"/>
+    <logger name="org.springframework.boot.autoconfigure" level="ERROR"/>
+
+    <!-- Enable application logging for debugging -->
+    <logger name="top.phakeandy.youchat" level="DEBUG"/>
+
+    <!-- Root logger set to ERROR level for minimal output -->
+    <root level="ERROR">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

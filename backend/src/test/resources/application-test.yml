@@ -1,0 +1,106 @@
+spring:
+  application:
+    name: youchat
+
+  # Disable Docker Compose for tests
+  docker:
+    compose:
+      enabled: false
+
+  # Use H2 in-memory database for tests
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # Configure H2 console for debugging
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Configure JPA for tests
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.H2Dialect
+
+  # Disable Redis for tests
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      # Use a test-specific database number
+      database: 1
+
+  # Configure Flyway for tests
+  flyway:
+    enabled: false
+
+  # Test-specific logging configuration
+  logging:
+    level:
+      root: ERROR
+      org.springframework: ERROR
+      org.springframework.boot: ERROR
+      org.springframework.test: ERROR
+      org.springframework.web: ERROR
+      org.hibernate: ERROR
+      org.flywaydb: ERROR
+      org.mybatis: ERROR
+      com.zaxxer.hikari: ERROR
+      # Enable debug for test classes
+      top.phakeandy.youchat: DEBUG
+    pattern:
+      console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+
+  # Test profiles
+  config:
+    activate:
+      on-profile: test
+
+  # Security settings for tests
+  security:
+    user:
+      name: test
+      password: test
+      roles: TEST
+
+  # Session settings for tests
+  session:
+    store-type: none
+    timeout: 1800
+
+  # Actuator settings for tests
+  management:
+    endpoints:
+      web:
+        exposure:
+          exclude: "*"
+    endpoint:
+      health:
+        show-details: never
+
+  # Spring Boot test properties
+  test:
+    database:
+      replace: auto-contained
+
+---
+# Profile for slice tests
+spring:
+  config:
+    activate:
+      on-profile: test-slice
+
+  logging:
+    level:
+      root: WARN
+      org.springframework.test: WARN
+      org.springframework.boot.test: WARN
