@@ -1,9 +1,6 @@
 package top.phakeandy.youchat.auth;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -19,40 +16,29 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import top.phakeandy.youchat.config.GlobalExceptionHandler;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AuthenticationControllerTest {
 
-  @Mock private AuthenticationManager authenticationManager;
-
-  @Mock private SecurityContextRepository securityContextRepository;
-
-  @Mock private SecurityContextHolderStrategy securityContextHolderStrategy;
+  @Mock private AuthenticationService authenticationService;
 
   @Mock private UserDetails userDetails;
 
   @Mock private Authentication authentication;
-
-  @Mock private SecurityContext securityContext;
 
   @InjectMocks private AuthenticationController authenticationController;
 
@@ -61,26 +47,28 @@ class AuthenticationControllerTest {
 
   @BeforeEach
   void setUp() {
-    mockMvc = MockMvcBuilders.standaloneSetup(authenticationController).build();
+    GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
+    mockMvc =
+        MockMvcBuilders.standaloneSetup(authenticationController)
+            .setControllerAdvice(exceptionHandler)
+            .build();
     objectMapper = new ObjectMapper();
 
     Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
     when(userDetails.getUsername()).thenReturn("testuser");
-    doReturn(authorities).when(userDetails).getAuthorities();
     when(authentication.getPrincipal()).thenReturn(userDetails);
     when(authentication.isAuthenticated()).thenReturn(true);
-    doReturn(authorities).when(authentication).getAuthorities();
-    when(securityContextHolderStrategy.createEmptyContext()).thenReturn(securityContext);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
   }
 
   @Test
   void shouldLoginSuccessfully() throws Exception {
     LoginRequest loginRequest = new LoginRequest("testuser", "password123");
+    LoginResponse loginResponse =
+        new LoginResponse("testuser", List.of(new SimpleGrantedAuthority("ROLE_USER")));
 
-    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-        .thenReturn(authentication);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
+    when(authenticationService.authenticate(
+            any(LoginRequest.class), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+        .thenReturn(loginResponse);
 
     mockMvc
         .perform(
@@ -91,42 +79,40 @@ class AuthenticationControllerTest {
         .andExpect(jsonPath("$.username").value("testuser"))
         .andExpect(jsonPath("$.authorities[0].authority").value("ROLE_USER"));
 
-    verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-    verify(securityContextHolderStrategy).setContext(securityContext);
-    verify(securityContextRepository)
-        .saveContext(
-            eq(securityContext), any(HttpServletRequest.class), any(HttpServletResponse.class));
+    verify(authenticationService)
+        .authenticate(
+            any(LoginRequest.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
   }
 
   @Test
   void shouldGetCurrentUserWhenAuthenticated() throws Exception {
+    UserResponse userResponse =
+        new UserResponse("testuser", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+    when(authenticationService.getCurrentUser(authentication)).thenReturn(userResponse);
+
     mockMvc
         .perform(get("/api/v1/auth/me").principal(authentication))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").value("testuser"))
         .andExpect(jsonPath("$.authorities[0].authority").value("ROLE_USER"));
+
+    verify(authenticationService).getCurrentUser(authentication);
   }
 
   @Test
-  void shouldCreateUnauthenticatedTokenCorrectly() throws Exception {
-    LoginRequest loginRequest = new LoginRequest("testuser", "password123");
+  void shouldHandleAuthenticationServiceException() throws Exception {
+    LoginRequest loginRequest = new LoginRequest("testuser", "wrongpassword");
 
-    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-        .thenReturn(authentication);
-    when(securityContext.getAuthentication()).thenReturn(authentication);
+    when(authenticationService.authenticate(
+            any(LoginRequest.class), any(HttpServletRequest.class), any(HttpServletResponse.class)))
+        .thenThrow(new InvalidCredentialsException("用户名或密码错误"));
 
-    mockMvc.perform(
-        post("/api/v1/auth/login")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(loginRequest)));
-
-    ArgumentCaptor<UsernamePasswordAuthenticationToken> tokenCaptor =
-        ArgumentCaptor.forClass(UsernamePasswordAuthenticationToken.class);
-    verify(authenticationManager).authenticate(tokenCaptor.capture());
-
-    UsernamePasswordAuthenticationToken capturedToken = tokenCaptor.getValue();
-    assertThat(capturedToken.getPrincipal()).isEqualTo("testuser");
-    assertThat(capturedToken.getCredentials()).isEqualTo("password123");
-    assertThat(capturedToken.isAuthenticated()).isFalse();
+    mockMvc
+        .perform(
+            post("/api/v1/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+        .andExpect(status().isUnauthorized());
   }
 }
