@@ -52,6 +52,7 @@ public class AuthenticationController {
                     "message",
                     "Username and password are required",
                     "authenticated",
+                    false,
                     "timestamp",
                     System.currentTimeMillis()));
       }
