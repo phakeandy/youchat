@@ -216,6 +216,13 @@ The backend requires these environment variables:
   - Include metadata like timestamps, status codes, and pagination info
   - Implement proper error response structures
 
+- **API Response Standard**:
+  - Semantic HTTP Status Codes (**NON-NEGOTIABLE**)
+  - **Anti-Pattern Prohibition**: The use of a generic wrapper object (e.g., ApiResponse<T>, ResultDTO<T>) that always returns an HTTP 200 OK status, with the real status code hidden inside the JSON body, is STRICTLY PROHIBITED. 
+  - No Manual Error Handling in Controllers: Controllers MUST NOT contain try-catch blocks for business logic exceptions or manually construct error responses (e.g., return ResponseEntity.badRequest(...)). This clutters the controller and leads to inconsistent error handling.
+  - Throw Custom Exceptions: Business logic errors from the service layer MUST be signaled by throwing specific, descriptive custom exceptions (e.g., ResourceNotFoundException, DuplicateEmailException).
+  - Global Exception Handler: All custom exceptions MUST be handled in a centralized @RestControllerAdvice component. This ensures separation of concerns and consistent error responses across the entire application. Standardized Error Format (**CRITICAL**): All error responses for client-facing errors (4xx and 5xx status codes) MUST conform to the RFC 7807 "Problem Details for HTTP APIs" standard. Spring Boot has native support for this, which must be enabled and utilized.
+
 #### **MyBatis Best Practices**
 
 - **Code Generator Configuration**:
