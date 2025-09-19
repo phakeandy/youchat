@@ -36,6 +36,12 @@
 		<springdoc.version>2.8.13</springdoc.version>
 		<mybatis-spring.version>3.0.5</mybatis-spring.version>
 
+		<!-- Code Quality Tools -->
+		<checkstyle.version>3.3.0</checkstyle.version>
+		<spotless.version>2.20.0</spotless.version>
+		<pmd.version>3.21.2</pmd.version>
+		<spotbugs.version>4.8.6.0</spotbugs.version>
+
 
 		<db.url>${env.PG_JDBC_URL}</db.url>
 		<db.user>${env.PG_USER}</db.user>
@@ -189,6 +195,133 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+
+			<!-- CheckStyle Plugin - Google Java Style -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${checkstyle.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.puppycrawl.tools</groupId>
+						<artifactId>checkstyle</artifactId>
+						<version>10.17.0</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<configLocation>google_checks.xml</configLocation>
+					<encoding>UTF-8</encoding>
+					<consoleOutput>true</consoleOutput>
+					<failsOnViolation>true</failsOnViolation>
+					<linkXRef>false</linkXRef>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Spotless Plugin - Code Formatter -->
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>${spotless.version}</version>
+				<configuration>
+					<java>
+						<googleJavaFormat>
+							<version>1.17.0</version>
+							<style>GOOGLE</style>
+						</googleJavaFormat>
+						<removeUnusedImports />
+						<importOrder>
+							<order>java,javax,org,com,top.phakeandy</order>
+						</importOrder>
+						<licenseHeader>
+							<content>
+/*
+ * Copyright (c) 2024 YouChat Project. All rights reserved.
+ */
+							</content>
+						</licenseHeader>
+					</java>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<phase>verify</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- PMD Plugin - Source Code Linting -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>${pmd.version}</version>
+				<configuration>
+					<targetJdk>21</targetJdk>
+					<failOnViolation>true</failOnViolation>
+					<printFailingErrors>true</printFailingErrors>
+					<linkXRef>false</linkXRef>
+					<analysisCache>true</analysisCache>
+					<rulesets>
+						<ruleset>/category/java/bestpractices.xml</ruleset>
+						<ruleset>/category/java/errorprone.xml</ruleset>
+						<ruleset>/category/java/codestyle.xml</ruleset>
+					</rulesets>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+							<goal>cpd-check</goal>
+						</goals>
+						<phase>verify</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- SpotBugs Plugin - Bytecode Analysis -->
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>${spotbugs.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.github.spotbugs</groupId>
+						<artifactId>spotbugs</artifactId>
+						<version>4.8.6</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<effort>Max</effort>
+					<threshold>Low</threshold>
+					<failOnError>true</failOnError>
+					<includeFilterFile>spotbugs-security-include.xml</includeFilterFile>
+					<plugins>
+						<plugin>
+							<groupId>com.h3xstream.findsecbugs</groupId>
+							<artifactId>findsecbugs-plugin</artifactId>
+							<version>1.12.0</version>
+						</plugin>
+					</plugins>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<phase>verify</phase>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
