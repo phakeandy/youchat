@@ -39,7 +39,7 @@
 
 		<!-- Code Quality Tools -->
 		<checkstyle.version>3.3.0</checkstyle.version>
-		<spotless.version>2.20.0</spotless.version>
+		<spotless.version>2.46.1</spotless.version>
 		<pmd.version>3.21.2</pmd.version>
 		<spotbugs.version>4.8.6.0</spotbugs.version>
 
@@ -270,20 +270,13 @@
 				<configuration>
 					<java>
 						<googleJavaFormat>
-							<version>1.17.0</version>
+							<version>1.28.0</version>
 							<style>GOOGLE</style>
 						</googleJavaFormat>
 						<removeUnusedImports />
-						<importOrder>
+						<!-- <importOrder>
 							<order>java,javax,org,com,top.phakeandy</order>
-						</importOrder>
-						<licenseHeader>
-							<content>
-/*
- * Copyright (c) 2024 YouChat Project. All rights reserved.
- */
-							</content>
-						</licenseHeader>
+						</importOrder> -->
 					</java>
 				</configuration>
 				<executions>

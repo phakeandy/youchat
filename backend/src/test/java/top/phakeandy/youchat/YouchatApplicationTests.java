@@ -8,10 +8,9 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class YouchatApplicationTests {
 
-	@Test
-	void contextLoads() {
-		// Basic context loading test with H2 in-memory database
-		// Docker Compose is disabled for this test
-	}
-
+  @Test
+  void contextLoads() {
+    // Basic context loading test with H2 in-memory database
+    // Docker Compose is disabled for this test
+  }
 }

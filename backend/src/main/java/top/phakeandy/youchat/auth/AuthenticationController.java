@@ -1,6 +1,10 @@
 package top.phakeandy.youchat.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,10 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,18 +33,27 @@ public class AuthenticationController {
   private final SecurityContextHolderStrategy securityContextHolderStrategy;
 
   @PostMapping("/login")
-  public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> credentials,
-      HttpServletRequest request, HttpServletResponse response) {
+  public ResponseEntity<Map<String, Object>> login(
+      @RequestBody Map<String, String> credentials,
+      HttpServletRequest request,
+      HttpServletResponse response) {
     try {
       // Validate input
       String username = credentials.get("username");
       String password = credentials.get("password");
 
-      if (username == null || username.trim().isEmpty() || password == null
+      if (username == null
+          || username.trim().isEmpty()
+          || password == null
           || password.trim().isEmpty()) {
         return ResponseEntity.badRequest()
-            .body(Map.of("message", "Username and password are required", "authenticated", false,
-                "timestamp", System.currentTimeMillis()));
+            .body(
+                Map.of(
+                    "message",
+                    "Username and password are required",
+                    "authenticated",
+                    "timestamp",
+                    System.currentTimeMillis()));
       }
 
       // Create authentication token
@@ -69,20 +78,41 @@ public class AuthenticationController {
 
       log.info("User {} logged in successfully", username);
 
-      return ResponseEntity.ok(Map.of("message", "Login successful", "authenticated", true,
-          "username", userDetails.getUsername(), "authorities", userDetails.getAuthorities(),
-          "timestamp", System.currentTimeMillis()));
+      return ResponseEntity.ok(
+          Map.of(
+              "message",
+              "Login successful",
+              "authenticated",
+              true,
+              "username",
+              userDetails.getUsername(),
+              "authorities",
+              userDetails.getAuthorities(),
+              "timestamp",
+              System.currentTimeMillis()));
 
     } catch (BadCredentialsException e) {
       log.warn("Login failed for user {}: {}", credentials.get("username"), e.getMessage());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(Map.of("message", "Authentication failed: " + e.getMessage(), "authenticated",
-              false, "timestamp", System.currentTimeMillis()));
+          .body(
+              Map.of(
+                  "message",
+                  "Authentication failed: " + e.getMessage(),
+                  "authenticated",
+                  false,
+                  "timestamp",
+                  System.currentTimeMillis()));
     } catch (Exception e) {
       log.error("Unexpected error during login for user {}", credentials.get("username"), e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("message", "An unexpected error occurred during authentication",
-              "authenticated", false, "timestamp", System.currentTimeMillis()));
+          .body(
+              Map.of(
+                  "message",
+                  "An unexpected error occurred during authentication",
+                  "authenticated",
+                  false,
+                  "timestamp",
+                  System.currentTimeMillis()));
     }
   }
 
@@ -105,11 +135,13 @@ public class AuthenticationController {
   // request, response);
 
   // return ResponseEntity
-  // .ok(Map.of("message", "Logout successful", "timestamp", System.currentTimeMillis()));
+  // .ok(Map.of("message", "Logout successful", "timestamp",
+  // System.currentTimeMillis()));
 
   // } catch (Exception e) {
   // log.error("Error during logout", e);
-  // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message",
+  // return
+  // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message",
   // "An error occurred during logout", "timestamp", System.currentTimeMillis()));
   // }
   // }
@@ -123,7 +155,13 @@ public class AuthenticationController {
 
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-    return ResponseEntity.ok(Map.of("authenticated", true, "username", userDetails.getUsername(),
-        "authorities", userDetails.getAuthorities()));
+    return ResponseEntity.ok(
+        Map.of(
+            "authenticated",
+            true,
+            "username",
+            userDetails.getUsername(),
+            "authorities",
+            userDetails.getAuthorities()));
   }
 }
