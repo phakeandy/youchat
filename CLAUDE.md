@@ -46,22 +46,22 @@ pnpm format           # Format code with Prettier
 cd backend
 
 # Standard Maven commands
-./mvnw clean compile     # Compile the project
-./mvnw test             # Run tests
-./mvnw package          # Create JAR
-./mvnw spring-boot:run  # Run the application
+mvnd clean compile     # Compile the project
+mvnd test             # Run tests
+mvnd package          # Create JAR
+mvnd spring-boot:run  # Run the application
 
 # Development
-./mvnw clean install    # Clean and install dependencies
-source .envrc && ./mvnw mybatis-generator:generate # Generate MyBatis 需要的样板代码，注意在你运行 clean 之后需要首先运行这个命令
+mvnd clean install    # Clean and install dependencies
+source .envrc && mvnd mybatis-generator:generate # Generate MyBatis 需要的样板代码，注意在你运行 clean 之后需要首先运行这个命令
 docker compose up -d    # 项目配置了 spring docker compose support，但有时候可能还是需要手动运行 docker
 
 # Code Quality Tools
-./mvnw spotless:apply   # Format code with Google Java Format, 可以去除 Unused imports，和 import order
-./mvnw checkstyle:check # Run Checkstyle validation
-./mvnw pmd:check        # Run PMD static analysis
-./mvnw spotbugs:check   # Run SpotBugs security analysis
-./mvnw verify           # Run all quality checks and tests
+mvnd spotless:apply   # Format code with Google Java Format, 可以去除 Unused imports，和 import order
+mvnd checkstyle:check # Run Checkstyle validation
+mvnd pmd:check        # Run PMD static analysis
+mvnd spotbugs:check   # Run SpotBugs security analysis
+mvnd verify           # Run all quality checks and tests
 ```
 
 ## Key Technologies & Dependencies
@@ -508,3 +508,4 @@ youchat/
 - The application is designed for scalability with PostgreSQL and Redis
 - All database connections use environment variables for security
 - Testing is comprehensive with both unit and E2E coverage
+- 使用中文与我交流（代码注释没有特殊要求写英文）
