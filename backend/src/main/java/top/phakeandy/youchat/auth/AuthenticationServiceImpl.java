@@ -58,16 +58,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
   }
 
-  @Override
-  public UserResponse getCurrentUser(Authentication authentication) {
-    if (authentication == null || !authentication.isAuthenticated()) {
-      throw new AuthenticationException("用户未认证");
-    }
-
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    return new UserResponse(userDetails.getUsername(), userDetails.getAuthorities());
-  }
-
   private void validateLoginRequest(LoginRequest loginRequest) {
     if (!StringUtils.hasText(loginRequest.username())
         || !StringUtils.hasText(loginRequest.password())) {

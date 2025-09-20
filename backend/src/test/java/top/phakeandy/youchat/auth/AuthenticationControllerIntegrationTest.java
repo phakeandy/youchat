@@ -1,7 +1,7 @@
 package top.phakeandy.youchat.auth;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -41,6 +39,7 @@ class AuthenticationControllerIntegrationTest extends TestBase {
     mockMvc
         .perform(
             post("/api/v1/auth/login")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """
@@ -59,6 +58,7 @@ class AuthenticationControllerIntegrationTest extends TestBase {
     mockMvc
         .perform(
             post("/api/v1/auth/login")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(
                     """
@@ -70,34 +70,5 @@ class AuthenticationControllerIntegrationTest extends TestBase {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.status").value(400))
         .andExpect(jsonPath("$.detail").exists());
-  }
-
-  @Test
-  @WithAnonymousUser
-  void shouldReturn401_whenGetMeWithoutAuthentication() throws Exception {
-    mockMvc
-        .perform(get("/api/v1/auth/me"))
-        .andExpect(status().isUnauthorized())
-        .andExpect(jsonPath("$.status").value(401));
-  }
-
-  @Test
-  @WithMockUser(
-      username = "testuser",
-      roles = {"USER"})
-  void shouldGetCurrentUser_whenUserIsAuthenticated() throws Exception {
-    mockMvc
-        .perform(get("/api/v1/auth/me"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.username").value("testuser"))
-        .andExpect(jsonPath("$.roles").isArray());
-  }
-
-  @Test
-  void shouldReturn401_whenAccessingProtectedEndpointWithoutAuth() throws Exception {
-    mockMvc
-        .perform(get("/api/v1/auth/me"))
-        .andExpect(status().isUnauthorized())
-        .andExpect(jsonPath("$.status").value(401));
   }
 }

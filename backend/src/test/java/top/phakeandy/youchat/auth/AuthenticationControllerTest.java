@@ -3,7 +3,6 @@ package top.phakeandy.youchat.auth;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -82,22 +81,6 @@ class AuthenticationControllerTest {
     verify(authenticationService)
         .authenticate(
             any(LoginRequest.class), any(HttpServletRequest.class), any(HttpServletResponse.class));
-  }
-
-  @Test
-  void shouldGetCurrentUserWhenAuthenticated() throws Exception {
-    UserResponse userResponse =
-        new UserResponse("testuser", List.of(new SimpleGrantedAuthority("ROLE_USER")));
-
-    when(authenticationService.getCurrentUser(authentication)).thenReturn(userResponse);
-
-    mockMvc
-        .perform(get("/api/v1/auth/me").principal(authentication))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.username").value("testuser"))
-        .andExpect(jsonPath("$.authorities[0].authority").value("ROLE_USER"));
-
-    verify(authenticationService).getCurrentUser(authentication);
   }
 
   @Test

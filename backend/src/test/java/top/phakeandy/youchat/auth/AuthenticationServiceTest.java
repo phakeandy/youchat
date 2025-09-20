@@ -111,21 +111,7 @@ class AuthenticationServiceTest {
         .isEqualTo("用户不存在");
   }
 
-  @Test
-  void shouldGetCurrentUserSuccessfully() {
-    when(userDetails.getUsername()).thenReturn("testuser");
-    doReturn(authorities).when(userDetails).getAuthorities();
-    when(authentication.getPrincipal()).thenReturn(userDetails);
-    lenient().when(authentication.isAuthenticated()).thenReturn(true);
-
-    UserResponse result = authenticationService.getCurrentUser(authentication);
-
-    assertThat(result).isNotNull();
-    assertThat(result.username()).isEqualTo("testuser");
-    assertThat(result.authorities()).hasSize(1);
-    assertThat(result.authorities().iterator().next().getAuthority()).isEqualTo("ROLE_USER");
-  }
-
+  
   @Test
   void shouldValidateLoginRequestFields() {
     LoginRequest loginRequest = new LoginRequest("", "");
@@ -189,20 +175,4 @@ class AuthenticationServiceTest {
         .isEqualTo("认证过程中发生错误: Session save failed");
   }
 
-  @Test
-  void shouldHandleNullAuthenticationInGetCurrentUser() {
-    assertThatThrownBy(() -> authenticationService.getCurrentUser(null))
-        .isInstanceOf(AuthenticationException.class)
-        .extracting(ex -> ((AuthenticationException) ex).getBody().getDetail())
-        .isEqualTo("用户未认证");
   }
-
-  @Test
-  void shouldHandleNonUserDetailsPrincipalInGetCurrentUser() {
-    when(authentication.getPrincipal()).thenReturn("invalid-principal");
-    lenient().when(authentication.isAuthenticated()).thenReturn(true);
-
-    assertThatThrownBy(() -> authenticationService.getCurrentUser(authentication))
-        .isInstanceOf(ClassCastException.class);
-  }
-}

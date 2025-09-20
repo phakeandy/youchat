@@ -15,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,31 +64,5 @@ public class AuthenticationController {
     LoginResponse loginResponse =
         authenticationService.authenticate(loginRequest, request, response);
     return ResponseEntity.ok(loginResponse);
-  }
-
-  @GetMapping("/me")
-  @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的详细信息，包括用户名和权限列表。需要用户已登录并持有有效会话。")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "成功获取当前用户信息",
-            content =
-                @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = UserResponse.class))),
-        @ApiResponse(
-            responseCode = "401",
-            description = "未认证，用户未登录或会话已过期",
-            content =
-                @Content(
-                    mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
-                    schema = @Schema(implementation = ProblemDetail.class))),
-      })
-  public ResponseEntity<UserResponse> getCurrentUser(
-      @Parameter(hidden = true) @AuthenticationPrincipal Authentication authentication) {
-
-    UserResponse userResponse = authenticationService.getCurrentUser(authentication);
-    return ResponseEntity.ok(userResponse);
   }
 }

@@ -1,0 +1,90 @@
+package top.phakeandy.youchat.user;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import top.phakeandy.youchat.auth.AuthenticationException;
+import top.phakeandy.youchat.auth.CustomUserDetails;
+import top.phakeandy.youchat.auth.CustomUserDetailsService;
+import top.phakeandy.youchat.auth.UserNotFoundException;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserServiceImpl implements UserService {
+
+  private final CustomUserDetailsService customUserDetailsService;
+
+  @Override
+  @Transactional
+  public CreateUserResponse createUser(CreateUserRequest request) {
+    log.debug("Creating new user: {}", request.username());
+
+    // 验证密码确认
+    if (!request.password().equals(request.confirmPassword())) {
+      throw new PasswordMismatchException();
+    }
+
+    // 检查用户名是否已存在
+    if (customUserDetailsService.existsByUsername(request.username())) {
+      throw new UsernameAlreadyExistsException(request.username());
+    }
+
+    try {
+      // 创建用户
+      CustomUserDetails createdUser =
+          customUserDetailsService.createUser(
+              request.username(),
+              request.password(),
+              request.nickname(),
+              null // avatarUrl is optional
+              );
+
+      log.info("User created successfully: {}", createdUser.getUsername());
+
+      return new CreateUserResponse(
+          "用户注册成功", createdUser.getId(), createdUser.getUsername(), createdUser.getNickname());
+
+    } catch (IllegalArgumentException e) {
+      // 处理密码验证错误
+      throw new InvalidPasswordException(e.getMessage());
+    }
+  }
+
+  @Override
+  public UserResponse getCurrentUser(Authentication authentication) {
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new AuthenticationException("用户未认证");
+    }
+
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    return new UserResponse(userDetails.getUsername(), userDetails.getAuthorities());
+  }
+
+  @Override
+  @Transactional
+  public void deleteCurrentUser(Authentication authentication) {
+    if (authentication == null || !authentication.isAuthenticated()) {
+      throw new UserNotFoundException("用户未认证");
+    }
+
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    String username = userDetails.getUsername();
+
+    log.debug("Deleting current user: {}", username);
+
+    // 查找用户
+    CustomUserDetails userToDelete =
+        customUserDetailsService
+            .findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException(username));
+
+    // 删除用户
+    customUserDetailsService.deleteUser(userToDelete.getId());
+
+    log.info("User deleted successfully: {}", username);
+  }
+}

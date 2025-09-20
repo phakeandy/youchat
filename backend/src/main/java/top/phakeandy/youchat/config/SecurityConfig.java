@@ -30,14 +30,18 @@ public class SecurityConfig {
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+    http.csrf(
+            csrf ->
+                csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .ignoringRequestMatchers("/api/v1/auth/**", "/api/v1/users"))
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers("/api/v1/auth/**")
                     .permitAll()
-                    .requestMatchers("/scalar/**")
+                    .requestMatchers("/api/v1/users")
                     .permitAll()
-                    .requestMatchers("/v3/api-docs/**")
+                    .requestMatchers(
+                        "/scalar/**", "/swagger-ui/**", "swagger-ui.html", "/v3/api-docs/**")
                     .permitAll()
                     .requestMatchers("/api/v1/public/**")
                     .permitAll()
