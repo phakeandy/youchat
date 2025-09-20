@@ -270,7 +270,9 @@ Key design decisions:
 
 ### Backend Better TDD Development Workflow
 
-TDD 开发范式 + API First：
+**Better TDD Approach**: 记住拿到一个需求，先创建或者更新测试再更新实现
+
+Better TDD 开发范式 + API First：
 
 - **计划阶段** 首先，分析我的需求。然后，以列表形式打印出你详细的实现计划。等待我确认。
 - **契约阶段** 计划确认后，首先在 Controller 类中创建空的API方法，并使用 OpenAPI 3 (Swagger) 注解（如 @Operation, @ApiResponses, @ApiResponse）为其编写完整的API文档。这必须定义出请求体、成功的响应体以及所有可预见的错误响应（例如400, 401, 404）。
@@ -361,30 +363,6 @@ TDD 开发范式 + API First：
 - XSS prevention
 - No sensitive data in frontend storage
 
-## Code Quality Standards
-
-### Frontend
-
-- Use ESLint with Vue TypeScript configuration
-- Format with Prettier and Tailwind CSS plugin
-- Type checking with vue-tsc
-- Follow Vue 3 Composition API patterns
-- Use Pinia for state management
-
-### Backend
-
-- **Google Java Format**: Code formatting with Spotless
-- **Checkstyle**: Google Java Style compliance and best practices
-- **PMD**: Static analysis for code quality and complexity
-- **SpotBugs**: Security-focused static analysis with FindSecBugs
-- **Lombok**: Reduce boilerplate code generation
-- **Spring Boot Best Practices**: Convention over configuration
-- **MyBatis Dynamic SQL**: Type-safe SQL operations (NOT JPA)
-- **SpringDoc OpenAPI**: API documentation and testing
-- **Java 21 Features**: Modern Java language features and patterns
-- **Security**: Spring Security with proper authentication/authorization
-- **Testing**: JUnit 5, Mockito, Spring Boot Test, Testcontainers
-
 ## Testing Strategy
 
 ### Frontend Testing Philosophy
@@ -419,61 +397,58 @@ TDD 开发范式 + API First：
 
 ### Backend Testing Strategy
 
-**Better TDD Approach**: 记住拿到一个需求，先创建或者更新测试再更新实现
+#### 一、 单元测试 (JUnit 5 + Mockito)
 
-#### Unit Tests (JUnit 5 + Mockito)
+- 核心焦点： 隔离测试单个类，主要覆盖 Service 层的业务逻辑、工具类、领域对象的行为等。
+- Mocking： 使用 Mockito 模拟外部依赖（如 Mapper、其他 Service），确保被测单元的独立性。
+- 断言： 使用 AssertJ 进行流式且可读性强的断言。
+- 覆盖率： 目标是为**关键和复杂的业务逻辑**提供**有意义的**高覆盖率。应将覆盖率报告作为**发现未测试代码路径**的工具，但**测试质量和有意义的断言**优先于追求具体的百分比数字。
+- 测试命名： 遵循 BDD (行为驱动开发) 风格: should\_预期行为\_when\_给定条件()。
 
-- **Focus**: Business logic, service layers, utilities
-- **Mocking**: Use Mockito for dependency isolation
-- **Assertions**: Use AssertJ for fluent assertions
-- **Coverage**: Target 80%+ coverage for business logic
-- **Test naming**: `should_expectedBehavior_when_condition()`
+#### 二、 切片测试 (Spring Boot Test Slices)
+- @WebMvcTest： 专注于测试 Web 层（Controller、全局异常处理器、参数校验）。
+    - 在不加载完整应用上下文的情况下，独立测试 RESTful 端点。
+    - 使用 @MockBean 模拟 Service 层的依赖。
+    - 验证**请求参数校验 (@Valid)**、JSON 序列化/反序列化、HTTP 状态码、响应头，并使用 JsonPath 验证 JSON 响应体。
+    
+- @DataJpaTest： 专注于测试数据访问层（MyBatis Mapper）。
+    - 测试 SQL 查询、数据映射逻辑和基本的 CRUD 操作。
+    - 用 Testcontainers 启动一个真实的 PostgreSQL 数据库实例，以确保 100% 的环境一致性，避免使用 H2 内存数据库带来的方言差异问题。
+    - 利用 @Transactional 注解实现测试隔离，确保每个测试方法都在独立且自动回滚的事务中运行。
 
-#### Slice Tests (Spring Boot Test Slices)
+#### 三、 集成测试 (@SpringBootTest + Testcontainers)
 
-- **`@WebMvcTest`**: Test web layer with MockMvc
-  - Test RESTful endpoints without full application context
-  - Use `@MockBean` for service layer mocking
-  - Validate HTTP status, headers, and JSON responses with JsonPath
-- **`@DataJpaTest`**: Test data access layer
-  - Test MyBatis mappers and database operations
-  - Use H2 in-memory database for fast testing
-  - Test CRUD operations and query logic
+- 文件命名：一个 Controller 对应一个集成测试类，使用 @SpringBootTest 和 @Testcontainers，在测试类名后面加上 IT (Integration Test) 例如，对于 AuthenticationController.java，它的集成测试类应该是 AuthenticationControllerIT.java。
+- 核心焦点： 测试从 API 端点到数据库的**完整后端应用调用链**。
+- 测试环境： 使用 Testcontainers 启动**所有真实的外部依赖**，如 **PostgreSQL**、**Redis** 等，搭建一个准生产环境。
+- 测试范围： 测试跨越多个组件（Controller -> Service -> Mapper -> DB）的**完整业务工作流**，验证组件间的协作是否正确。
+- 测试数据： 通过数据构建者（Data Builders）、固件（Fixtures）或 SQL 脚本（@Sql）来管理测试数据。
 
-#### Integration Tests (Testcontainers)
+#### 四、 API 测试最佳实践
+        
+- JSON 断言： 使用 JsonPath 进行健壮、精确的 JSON 响应体断言。
+- HTTP 状态码： 全面测试各种在 API 契约中描述的状态码
+- 响应头： 验证关键响应头，如 Content-Type，以及创建资源后返回的 Location。
+- 场景覆盖： 测试所有关键场景，包括成功路径（Happy Path）、所有可预见的错误场景（如无效输入、资源不存在）和边界条件。
+- 列表接口： 针对返回列表的接口，必须测试其分页和筛选功能。
+    
+#### 五、 安全性测试
 
-- **Full stack testing** with real PostgreSQL and Redis containers
-- **Test complete workflows** across multiple layers
-- **Environment-specific testing** with production-like setup
-- **Performance and scalability** testing
+- 认证测试： 在**集成测试**中，测试真实的用户登录、Token 生成和后续请求的 Token 验证流程。
+- 授权测试： 在 **@WebMvcTest 切片测试**中，使用 Spring Security Test 提供的注解（如 @WithMockUser,它适用于绝大多数认证场景，包括基于 Session 的认证）来模拟不同角色/权限的用户，验证接口的访问控制是否符合预期。  
+    \-- 输入校验： 确保参数校验和净化逻辑能有效防止常见漏洞（如 SQL 注入、XSS），这部分测试主要在 @WebMvcTest 中进行。
+- 安全响应头： 验证 CORS、CSRF、CSP 等安全相关的响应头是否已正确配置。
 
-#### API Testing Best Practices
+#### 六、 避免反模式
 
-- **Use JsonPath for JSON assertions**:
-  ```java
-  mockMvc.perform(get("/api/users"))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.data[*].id").exists())
-      .andExpect(jsonPath("$.data[0].name").value("John Doe"));
-  ```
-- **Test HTTP status codes**: 200, 201, 400, 401, 404, 500
-- **Test response headers**: Content-Type, Location, etc.
-- **Test error scenarios**: Invalid inputs, authentication failures
-- **Test pagination and filtering**: For list endpoints
-
-#### Database Testing
-
-- **MyBatis Mapper Testing**: Test SQL queries and data mapping
-- **Transaction Rollback**: Use `@Transactional` for test isolation
-- **Test Data Management**: Use test data builders or fixtures
-- **Schema Validation**: Test Flyway migrations in integration tests
-
-#### Security Testing
-
-- **Authentication Testing**: Test login/logout flows
-- **Authorization Testing**: Test role-based access control
-- **Input Validation**: Test parameter validation and sanitization
-- **Security Headers**: Test CORS, CSRF, and other security headers
+1. **不测试框架：** 禁止测试 Spring 注解（如 `@Autowired`）、Getter/Setter、Mybatis 的基础 CRUD 或 Jackson 序列化。假设框架工作正常。
+2. **不测试实现细节：** 只测试公共方法的行为（输入/输出、状态改变、对外交互），**绝不**通过反射测试私有方法。
+3. **智能 Mock：**
+    - Mock 外部依赖（如数据库、第三方客户端）。
+    - **禁止**仅验证“方法是否被调用”（`verify(mock).someMethod()`）。必须验证**调用的参数**是否正确，或使用 Mock 来定义依赖的**行为**（如 `when(...).thenReturn(...)`）以驱动业务逻辑测试。
+4. **聚焦业务逻辑：** 测试应覆盖核心的业务规则、条件分支、计算和异常流程。
+5. 无需性能测试
+6. 无需强调测试覆盖度，不要编写低质量的“凑数”测试。
 
 ## Project Structure
 
