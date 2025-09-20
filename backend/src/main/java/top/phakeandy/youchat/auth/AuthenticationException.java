@@ -10,8 +10,7 @@ public class AuthenticationException extends ErrorResponseException {
     super(
         HttpStatus.UNAUTHORIZED,
         ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, message),
-        null
-    );
+        null);
     getBody().setTitle("认证失败");
   }
 
@@ -19,8 +18,7 @@ public class AuthenticationException extends ErrorResponseException {
     super(
         HttpStatus.UNAUTHORIZED,
         ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, message),
-        cause
-    );
+        cause);
     getBody().setTitle("认证失败");
   }
 }

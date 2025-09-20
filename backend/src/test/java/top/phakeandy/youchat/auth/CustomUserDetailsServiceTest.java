@@ -1,4 +1,4 @@
-package top.phakeandy.youchat.user;
+package top.phakeandy.youchat.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,13 +18,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import top.phakeandy.youchat.auth.CustomUserDetails;
-import top.phakeandy.youchat.auth.CustomUserDetailsService;
 import top.phakeandy.youchat.mapper.UsersMapper;
 import top.phakeandy.youchat.model.Users;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class CustomUserDetailsServiceTest {
 
   @Mock private UsersMapper usersMapper;
 

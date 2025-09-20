@@ -10,8 +10,7 @@ public class InvalidCredentialsException extends ErrorResponseException {
     super(
         HttpStatus.UNAUTHORIZED,
         ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, message),
-        null
-    );
+        null);
     getBody().setTitle("凭据无效");
   }
 
@@ -19,8 +18,7 @@ public class InvalidCredentialsException extends ErrorResponseException {
     super(
         HttpStatus.UNAUTHORIZED,
         ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, message),
-        cause
-    );
+        cause);
     getBody().setTitle("凭据无效");
   }
 }

@@ -11,8 +11,7 @@ public class UserNotFoundException extends ErrorResponseException {
     super(
         HttpStatus.NOT_FOUND,
         ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "用户 " + userId + " 不存在。"),
-        null
-    );
+        null);
     getBody().setTitle("用户未找到");
   }
 
@@ -20,8 +19,7 @@ public class UserNotFoundException extends ErrorResponseException {
     super(
         HttpStatus.NOT_FOUND,
         ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "用户 " + username + " 不存在。"),
-        null
-    );
+        null);
     getBody().setTitle("用户未找到");
   }
 
@@ -29,8 +27,7 @@ public class UserNotFoundException extends ErrorResponseException {
     super(
         HttpStatus.NOT_FOUND,
         ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "用户不存在"),
-        null
-    );
+        null);
     getBody().setTitle("用户未找到");
   }
 }

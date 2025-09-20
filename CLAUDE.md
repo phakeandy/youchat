@@ -269,12 +269,15 @@ Key design decisions:
 - **Sensitive data**: Never log sensitive information
 - **CORS configuration**: Proper cross-origin resource sharing
 
-### Development Workflow Requirements
+### Backend Better TDD Development Workflow
 
-- **TDD is Mandatory**: Write tests before production code
-- **Documentation**: Keep API documentation synchronized with code
-- **Code Review**: 必须运行测试：`mvnd test` 命令确保所有测试通过
-- **Continuous Integration**: 在你像我报告任务完成之前，必须要运行后端代码质量检测
+TDD 开发范式 + API First：
+
+- **计划阶段** 首先，分析我的需求。然后，以列表形式打印出你详细的实现计划。等待我确认。
+- **契约阶段** 计划确认后，首先在 Controller 类中创建空的API方法，并使用 OpenAPI 3 (Swagger) 注解（如 @Operation, @ApiResponses, @ApiResponse）为其编写完整的API文档。这必须定义出请求体、成功的响应体以及所有可预见的错误响应（例如400, 401, 404）。
+- **测试阶段 - RED** 接下来，为这个API编写一个或多个单元测试（在...Test.java中）。这些测试应该基于上一步定义的API契约，并且现在必然会失败。
+- **实现阶段 - GREEN** 现在，开始编写业务逻辑（通常在Service层和Repository层）以及Controller的实现代码。你的目标是让所有测试都通过。请遵循Spring Boot的最佳实践，例如分层架构、依赖注入等。
+- **质量门禁** 在所有测试通过后，运行 Formatter，运行代码质量检查工具（Checkstyle, PMD，spotbugs）。确保代码符合规范后，再向我报告任务完成。
 
 ### Anti-Patterns to Avoid
 
