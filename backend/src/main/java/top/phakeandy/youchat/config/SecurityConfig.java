@@ -34,11 +34,11 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers("/api/v1/auth/**")
                     .permitAll()
-                    .requestMatchers("/scalar", "/scalar/**")
+                    .requestMatchers("/scalar/**")
                     .permitAll()
                     .requestMatchers("/v3/api-docs/**")
                     .permitAll()
-                    .requestMatchers("/api/public/**")
+                    .requestMatchers("/api/v1/public/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

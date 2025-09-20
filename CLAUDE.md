@@ -46,6 +46,7 @@ pnpm format           # Format code with Prettier
 cd backend
 
 # Standard Maven commands
+# 你可以使用 `mvnd` 的 `-q` 选项来运行 maven 命令，获得更加纯净的输出
 mvnd clean compile     # Compile the project
 mvnd test             # Run tests
 mvnd package          # Create JAR
@@ -253,8 +254,12 @@ The backend requires these environment variables:
 - **Follow REST conventions**: Use proper HTTP methods and status codes
 - **JSON responses**: Consistent response structure with proper content types
 - **Error handling**: Standardized error response format
-- **API versioning**: Version all endpoints for backwards compatibility
 - **Documentation**: OpenAPI/Swagger documentation for all endpoints
+
+##### OpenAPI Documentation
+
+- 使用在后端的 Controller 和 Dto Vo 里面的生成 openapi 文档作为前后端交流的唯一凭证
+- 不要在 `@ApiREsponses` 注解里面包含 `500` 错误码
 
 #### **Security Standards**
 
@@ -334,13 +339,7 @@ The backend requires these environment variables:
 #### **Icon Standards**
 
 - **Icon Library**: Use unplugin-icons and Tabler Icons **FIRST**, For example:
-  - **Icon Format**: `i-tabler-[icon-name]`
-  - **Common Icons**:
-    - Message: `i-tabler-message-circle`
-    - Users: `i-tabler-users`
-    - Login: `i-tabler-login`
-    - Register: `i-tabler-user-plus`
-    - Upload: `i-tabler-upload`
+  - **Icon Format**: `i-tabler-[icon-name]` e.g. `i-tabler-message-circle`
 
 ### **Development Workflow Requirements**
 
