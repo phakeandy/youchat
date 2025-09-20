@@ -6,6 +6,8 @@ import org.springframework.web.ErrorResponseException;
 
 public class InvalidCredentialsException extends ErrorResponseException {
 
+  private static final long serialVersionUID = 1L;
+
   public InvalidCredentialsException(String message) {
     super(
         HttpStatus.UNAUTHORIZED,

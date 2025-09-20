@@ -50,9 +50,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       return new LoginResponse(userDetails.getUsername(), userDetails.getAuthorities());
 
     } catch (BadCredentialsException ex) {
-      throw new InvalidCredentialsException("用户名或密码错误");
+      throw new InvalidCredentialsException("用户名或密码错误", ex);
     } catch (UsernameNotFoundException ex) {
-      throw new UserNotFoundException();
+      throw new UserNotFoundException("用户不存在", ex);
     } catch (Exception ex) {
       throw new AuthenticationException("认证过程中发生错误: " + ex.getMessage(), ex);
     }

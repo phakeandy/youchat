@@ -58,12 +58,11 @@ source .envrc && mvnd mybatis-generator:generate # Generate MyBatis 需要的样
 docker compose up -d    # 项目配置了 spring docker compose support，但有时候可能还是需要手动运行 docker
 
 # Fomatting and Linting
-mvnd spotless:apply
+mvnd spotless:apply  # Format code with Google Java Format, 可以去除 Unused imports，和 import order
 sqlfluff format --dialect postgres src/main/resources/db/migration
 sqlfluff lint --dialect postgres src/main/resources/db/migration
 
 # Code Quality Tools
-mvnd spotless:apply   # Format code with Google Java Format, 可以去除 Unused imports，和 import order
 mvnd checkstyle:check # Run Checkstyle validation
 mvnd pmd:check        # Run PMD static analysis
 mvnd spotbugs:check   # Run SpotBugs security analysis
@@ -277,7 +276,8 @@ TDD 开发范式 + API First：
 - **契约阶段** 计划确认后，首先在 Controller 类中创建空的API方法，并使用 OpenAPI 3 (Swagger) 注解（如 @Operation, @ApiResponses, @ApiResponse）为其编写完整的API文档。这必须定义出请求体、成功的响应体以及所有可预见的错误响应（例如400, 401, 404）。
 - **测试阶段 - RED** 接下来，为这个API编写一个或多个单元测试（在...Test.java中）。这些测试应该基于上一步定义的API契约，并且现在必然会失败。
 - **实现阶段 - GREEN** 现在，开始编写业务逻辑（通常在Service层和Repository层）以及Controller的实现代码。你的目标是让所有测试都通过。请遵循Spring Boot的最佳实践，例如分层架构、依赖注入等。
-- **质量门禁** 在所有测试通过后，运行 Formatter，运行代码质量检查工具（Checkstyle, PMD，spotbugs）。确保代码符合规范后，再向我报告任务完成。
+- **质量门禁** 在所有测试通过后，运行 Formatter。然后运行代码质量检查工具 `mvnd verify`（Checkstyle, PMD，spotbugs）。确保代码符合规范后，再向我报告任务完成。
+  - 可以忽略 spotbugs 的低优先级警告
 
 ### Anti-Patterns to Avoid
 

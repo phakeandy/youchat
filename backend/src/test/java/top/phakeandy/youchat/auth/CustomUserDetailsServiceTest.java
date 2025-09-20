@@ -44,7 +44,7 @@ class CustomUserDetailsServiceTest {
     testUsers.setCreatedAt(new Date());
     testUsers.setUpdatedAt(new Date());
 
-    testUser = new CustomUserDetails(testUsers);
+    testUser = CustomUserDetails.fromUsers(testUsers);
   }
 
   @Test

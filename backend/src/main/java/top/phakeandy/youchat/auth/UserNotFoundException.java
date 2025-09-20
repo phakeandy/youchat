@@ -7,6 +7,8 @@ import org.springframework.web.ErrorResponseException;
 
 public class UserNotFoundException extends ErrorResponseException {
 
+  private static final long serialVersionUID = 1L;
+
   public UserNotFoundException(UUID userId) {
     super(
         HttpStatus.NOT_FOUND,
@@ -28,6 +30,14 @@ public class UserNotFoundException extends ErrorResponseException {
         HttpStatus.NOT_FOUND,
         ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "用户不存在"),
         null);
+    getBody().setTitle("用户未找到");
+  }
+
+  public UserNotFoundException(String message, Throwable cause) {
+    super(
+        HttpStatus.NOT_FOUND,
+        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, message),
+        cause);
     getBody().setTitle("用户未找到");
   }
 }

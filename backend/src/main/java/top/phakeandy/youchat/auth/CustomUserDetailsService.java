@@ -39,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     Users users = usersOptional.get();
     log.debug("User found: {}", users.getUsername());
 
-    return new CustomUserDetails(users);
+    return CustomUserDetails.fromUsers(users);
   }
 
   @Transactional(readOnly = true)
@@ -48,14 +48,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     return usersMapper
         .selectOne(c -> c.where(UsersDynamicSqlSupport.username, isEqualTo(username)))
-        .map(CustomUserDetails::new);
+        .map(CustomUserDetails::fromUsers);
   }
 
   @Transactional(readOnly = true)
   public Optional<CustomUserDetails> findById(Long id) {
     log.debug("Finding user by id: {}", id);
 
-    return usersMapper.selectByPrimaryKey(id).map(CustomUserDetails::new);
+    return usersMapper.selectByPrimaryKey(id).map(CustomUserDetails::fromUsers);
   }
 
   @Transactional

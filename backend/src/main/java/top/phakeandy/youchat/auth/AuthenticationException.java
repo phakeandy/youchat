@@ -6,6 +6,8 @@ import org.springframework.web.ErrorResponseException;
 
 public class AuthenticationException extends ErrorResponseException {
 
+  private static final long serialVersionUID = 1L;
+
   public AuthenticationException(String message) {
     super(
         HttpStatus.UNAUTHORIZED,

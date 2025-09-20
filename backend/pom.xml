@@ -328,7 +328,8 @@
 					<effort>Max</effort>
 					<threshold>Low</threshold>
 					<failOnError>true</failOnError>
-					<includeFilterFile>spotbugs-security-include.xml</includeFilterFile>
+					<includeFilterFile>
+						${project.basedir}/src/main/resources/spotbugs-security-include.xml</includeFilterFile>
 					<plugins>
 						<plugin>
 							<groupId>com.h3xstream.findsecbugs</groupId>
