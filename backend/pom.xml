@@ -297,13 +297,8 @@
 					<printFailingErrors>true</printFailingErrors>
 					<linkXRef>false</linkXRef>
 					<analysisCache>true</analysisCache>
-					<rule ref="category/java/bestpractices.xml">
-						<exclude name="GuardLogStatement" />
-					</rule>
 					<rulesets>
-						<ruleset>/category/java/bestpractices.xml
-						</ruleset>
-						<ruleset>/category/java/errorprone.xml</ruleset>
+						<ruleset>${project.basedir}/src/main/resources/pmd-ruleset.xml</ruleset>
 					</rulesets>
 				</configuration>
 				<executions>
