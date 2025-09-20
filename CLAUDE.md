@@ -57,6 +57,11 @@ mvnd clean install    # Clean and install dependencies
 source .envrc && mvnd mybatis-generator:generate # Generate MyBatis 需要的样板代码，注意在你运行 clean 之后需要首先运行这个命令
 docker compose up -d    # 项目配置了 spring docker compose support，但有时候可能还是需要手动运行 docker
 
+# Fomatting and Linting
+mvnd spotless:apply
+sqlfluff format --dialect postgres src/main/resources/db/migration
+sqlfluff lint --dialect postgres src/main/resources/db/migration
+
 # Code Quality Tools
 mvnd spotless:apply   # Format code with Google Java Format, 可以去除 Unused imports，和 import order
 mvnd checkstyle:check # Run Checkstyle validation
@@ -119,12 +124,7 @@ Key design decisions:
 
 ### Environment Variables
 
-The backend requires these environment variables:
-
-- `PG_JDBC_URL`: PostgreSQL JDBC URL
-- `PG_USER`: Database username
-- `PG_DB`: Database name
-- `PG_PASS`: Database password
+需要的环境变量全部在 `.envrc` 文件中定义
 
 ### Database Development
 
@@ -134,40 +134,40 @@ The backend requires these environment variables:
 
 ## Backend Development Requirements
 
-### **Better TDD for Backend**
+### Better TDD for Backend
 
 - **Philosophy**: Test-driven development with failing tests first
 - **Process**: Write failing test → Minimal implementation → Refactor
-- **All production code must have corresponding tests**
+- All production code must have corresponding tests
 - Test file naming: `ClassNameTest.java`
 - Coverage must include business logic, edge cases, and API endpoints
 - All tests and quality checks must pass before committing
 
-#### **Testing Strategy**
+#### Testing Strategy
 
 - **Unit Tests**: JUnit 5 with Mockito for isolated component testing
 - **Slice Tests**: Spring Boot test slices (`@WebMvcTest`, `@DataJpaTest`, `@WebFluxTest`)
 - **Integration Tests**: `@SpringBootTest` with Testcontainers for full stack testing
 - **API Tests**: RESTful endpoint testing with MockMvc and structured assertions
 
-#### **RESTful API Testing Requirements**
+#### RESTful API Testing Requirements
 
 - **Use JsonPath for JSON response validation** - NEVER test string equality
-- **Test status codes, headers, and response structure**
-- **Use `@MockBean` for dependency isolation in slice tests**
-- **Test error scenarios and edge cases**
-- **Avoid testing implementation details, focus on API contracts**
+- **Test status codes, headers, and response structure
+- **Use `@MockBean` for dependency isolation in slice tests
+- **Test error scenarios and edge cases
+- **Avoid testing implementation details, focus on API contracts
 
-#### **Database Testing**
+#### Database Testing
 
 - **Unit Tests**: H2 in-memory database for fast testing
 - **Integration Tests**: Testcontainers with PostgreSQL for realistic testing
-- **Use `@Transactional` for test isolation**
-- **Test MyBatis mapper SQL queries and data access logic**
+- **Use `@Transactional` for test isolation
+- **Test MyBatis mapper SQL queries and data access logic
 
-### **STRICT** Coding Standards
+### STRICT** Coding Standards
 
-#### **Code Quality Requirements**
+#### Code Quality Requirements
 
 - **Checkstyle**: Google Java Style compliance
 - **PMD**: Static code analysis for code quality and best practices
@@ -175,7 +175,7 @@ The backend requires these environment variables:
 - **Spotless**: Code formatting and import ordering
 - **All quality tools must pass** before 你标记提示我的这个需求完成了
 
-#### **Spring Security 8.x Best Practices**
+#### Spring Security 8.x Best Practices
 
 - **Use latest Spring Security 6.x APIs** (compatible with Spring Boot 3.5.5):
   - Use `UsernamePasswordAuthenticationToken.unauthenticated()` for creating unauthenticated tokens
@@ -194,7 +194,7 @@ The backend requires these environment variables:
   - Configure appropriate session timeout and concurrency control
   - Implement session fixation protection
 
-#### **Controller Layer Data Transfer Standards**
+#### Controller Layer Data Transfer Standards
 
 “廋” Contrller “胖” Service 原则：不要编写复杂的 Controller，Controller 的指责应该尽量单一（接收HTTP请求，解析请求参数（路径变量、查询参数、请求体等）。），更多的业务逻辑应该在 Service 层处理。
 
@@ -221,7 +221,7 @@ The backend requires these environment variables:
     - 错误实践：`@NotBlank(message = "Username is required") private String username;`
     - 正确实践：`@NotBlank(message = "用户名不能为空") private String username;`
 
-#### **MyBatis Best Practices**
+#### MyBatis Best Practices
 
 - **Code Generator Configuration**:
   - MyBatis Generator generates code to `target/generated-sources/mybatis-generator`
@@ -233,7 +233,7 @@ The backend requires these environment variables:
   - Avoid handwritten SQL strings, use `SqlBuilder` and `StatementBuilder`
   - Leverage `@SelectProvider` and `@UpdateProvider` annotations
 
-#### **Lombok Configuration**
+#### Lombok Configuration
 
 - **Lombok is configured**: No need to manually write getter, setter, toString methods
 - **Common annotations**:
@@ -242,14 +242,14 @@ The backend requires these environment variables:
   - `@Slf4j`: Auto-generate log field
   - `@Builder`: Support builder pattern
 
-#### **Testing Strategy Enhancement**
+#### Testing Strategy Enhancement
 
 - **Unit Tests**: Use Mockito for dependency isolation, JsonPath for JSON response validation
 - **Integration Tests**: Use Testcontainers for real PostgreSQL database testing instead of H2 in-memory database
 - **Test Data Management**: Use `@Transactional` to ensure test isolation with automatic rollback
 - **API Testing**: Use MockMvc for RESTful endpoint testing, avoid string comparison
 
-#### **RESTful API Standards**
+#### RESTful API Standards
 
 - **Follow REST conventions**: Use proper HTTP methods and status codes
 - **JSON responses**: Consistent response structure with proper content types
@@ -261,7 +261,7 @@ The backend requires these environment variables:
 - 使用在后端的 Controller 和 Dto Vo 里面的生成 openapi 文档作为前后端交流的唯一凭证
 - 不要在 `@ApiREsponses` 注解里面包含 `500` 错误码
 
-#### **Security Standards**
+#### Security Standards
 
 - **Spring Security**: Proper authentication and authorization
 - **Input validation**: Validate all user inputs
@@ -269,15 +269,14 @@ The backend requires these environment variables:
 - **Sensitive data**: Never log sensitive information
 - **CORS configuration**: Proper cross-origin resource sharing
 
-### **Development Workflow Requirements**
+### Development Workflow Requirements
 
 - **TDD is Mandatory**: Write tests before production code
-- **Continuous Integration**: Run quality checks on every commit
-- **Code Review**: All changes must pass quality gate checks
-- **Test Coverage**: Maintain high test coverage for business logic
 - **Documentation**: Keep API documentation synchronized with code
+- **Code Review**: 必须运行测试：`mvnd test` 命令确保所有测试通过
+- **Continuous Integration**: 在你像我报告任务完成之前，必须要运行后端代码质量检测
 
-### **Anti-Patterns to Avoid**
+### Anti-Patterns to Avoid
 
 - **Testing JSON string equality**: Use JsonPath assertions instead
 - **Bypassing quality tools**: All tools must pass before committing
@@ -287,48 +286,48 @@ The backend requires these environment variables:
 
 ## Frontend Development Requirements
 
-### **Better TDD for Frontend**
+### Better TDD for Frontend
 
 - **Philosophy**: Test behavior over implementation, user experience over styling details
 - **Process**: Write failing test → Minimal implementation → Small refactoring
-- **All components must have corresponding test files**
+- All components must have corresponding test files
 - Test file naming: `ComponentName.spec.ts`
 - Coverage must include main functionality and edge cases
 - All tests must pass before committing
 
-#### **Unit Testing Focus (Component Logic)**
+#### Unit Testing Focus (Component Logic)
 
 - **Test what users see**: Text content, interactive elements, structure
 - **Test component behavior**: Click handlers, state changes, user interactions
 - **Use semantic selectors**: `aria-label`, `data-testid`, roles over CSS classes
 - **Avoid implementation details**: Never test CSS class names, internal state, or styling
 
-#### **Component Testability Requirements**
+#### Component Testability Requirements
 
 - **Use `data-testid`** for stable element identification
 - **Add `aria-label`** to interactive elements for accessibility and testability
 - **Structure over styling**: Test DOM structure, not visual presentation
 - **Test functionality**: What the component does, not how it looks
 
-### **STRICT** Coding Standards
+### STRICT** Coding Standards
 
-#### **Component Format**
+#### Component Format
 
 - Use `<script setup lang="ts">` syntax and `<script lang="ts"></script>` should be always on top of `<tmplates>`
 - PascalCase component naming convention
 - Strict TypeScript type checking enabled
 - No bypassing type safety
 
-#### **Design System Requirements (NON-NEGOTIABLE)**
+#### Design System Requirements (NON-NEGOTIABLE)
 
 - **DaisyUI Components**: Must use DaisyUI component classes
   - Card: `card`, `card-body`, `card-title`, `card-actions`
   - Button: `btn`, `btn-primary`, `btn-secondary`, `btn-lg`
   - Grid: `grid`, `md:grid-cols-2`, `lg:grid-cols-4`
 
-#### **Color System (CRITICAL)**
+#### Color System (CRITICAL)
 
-- **Semantic Colors Only**: Hard-coded colors are **STRICTLY FORBIDDEN**
+- **Semantic Colors Only**: Hard-coded colors are **STRICTLY FORBIDDEN
 - **Forbidden**: `text-gray-500`, `text-gray-600`, `text-gray-800`, `bg-gray-100`, etc.
 - **Required Semantic Classes**:
   - Text: `text-primary`, `text-secondary`, `text-accent`, `text-base-content/[opacity]`
@@ -336,19 +335,19 @@ The backend requires these environment variables:
   - Opacity: Use `/50`, `/60`, `/70`, `/80` variants (e.g., `text-base-content/60`)
   - Gradients: Use semantic transparency variants (e.g., `from-primary/5 to-secondary/10`)
 
-#### **Icon Standards**
+#### Icon Standards
 
 - **Icon Library**: Use unplugin-icons and Tabler Icons **FIRST**, For example:
   - **Icon Format**: `i-tabler-[icon-name]` e.g. `i-tabler-message-circle`
 
-### **Development Workflow Requirements**
+### Development Workflow Requirements
 
 - **Better TDD is Non-Negotiable**: All development must follow behavior-first testing approach
 - **Continuous Testing**: Run tests after every change
 - **Code Quality**: ESLint, Prettier, and regular linting required
 - **Clear commit messages** with all tests passing
 
-### **Accessibility & Security**
+### Accessibility & Security
 
 - Semantic HTML5 tags
 - Proper ARIA labels (enhances both accessibility and testability)
@@ -407,7 +406,7 @@ The backend requires these environment variables:
 - **Coverage**: V8 coverage provider
 - **Test Location**: Co-located with source files (`__tests__/` directories)
 
-#### **Testing Best Practices**
+#### Testing Best Practices
 
 1. **Test User Experience**: What the user sees and does
 2. **Use Stable Selectors**: `data-testid` and `aria-label` over CSS classes
@@ -419,7 +418,7 @@ The backend requires these environment variables:
 
 **Better TDD Approach**: 记住拿到一个需求，先创建或者更新测试再更新实现
 
-#### **Unit Tests (JUnit 5 + Mockito)**
+#### Unit Tests (JUnit 5 + Mockito)
 
 - **Focus**: Business logic, service layers, utilities
 - **Mocking**: Use Mockito for dependency isolation
@@ -427,7 +426,7 @@ The backend requires these environment variables:
 - **Coverage**: Target 80%+ coverage for business logic
 - **Test naming**: `should_expectedBehavior_when_condition()`
 
-#### **Slice Tests (Spring Boot Test Slices)**
+#### Slice Tests (Spring Boot Test Slices)
 
 - **`@WebMvcTest`**: Test web layer with MockMvc
   - Test RESTful endpoints without full application context
@@ -438,14 +437,14 @@ The backend requires these environment variables:
   - Use H2 in-memory database for fast testing
   - Test CRUD operations and query logic
 
-#### **Integration Tests (Testcontainers)**
+#### Integration Tests (Testcontainers)
 
 - **Full stack testing** with real PostgreSQL and Redis containers
 - **Test complete workflows** across multiple layers
 - **Environment-specific testing** with production-like setup
 - **Performance and scalability** testing
 
-#### **API Testing Best Practices**
+#### API Testing Best Practices
 
 - **Use JsonPath for JSON assertions**:
   ```java
@@ -459,14 +458,14 @@ The backend requires these environment variables:
 - **Test error scenarios**: Invalid inputs, authentication failures
 - **Test pagination and filtering**: For list endpoints
 
-#### **Database Testing**
+#### Database Testing
 
 - **MyBatis Mapper Testing**: Test SQL queries and data mapping
 - **Transaction Rollback**: Use `@Transactional` for test isolation
 - **Test Data Management**: Use test data builders or fixtures
 - **Schema Validation**: Test Flyway migrations in integration tests
 
-#### **Security Testing**
+#### Security Testing
 
 - **Authentication Testing**: Test login/logout flows
 - **Authorization Testing**: Test role-based access control

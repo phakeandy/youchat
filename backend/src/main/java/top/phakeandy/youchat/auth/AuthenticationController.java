@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ProblemDetail;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -48,14 +49,14 @@ public class AuthenticationController {
             content =
                 @Content(
                     mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
-                    schema = @Schema(description = "RFC 7807 错误详情格式"))),
+                    schema = @Schema(implementation = ProblemDetail.class))),
         @ApiResponse(
             responseCode = "401",
             description = "身份验证失败，用户名或密码错误",
             content =
                 @Content(
                     mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
-                    schema = @Schema(description = "RFC 7807 错误详情格式"))),
+                    schema = @Schema(implementation = ProblemDetail.class))),
       })
   public ResponseEntity<LoginResponse> login(
       @Parameter(description = "登录请求参数，包含用户名和密码", required = true) @Valid @RequestBody
@@ -85,7 +86,7 @@ public class AuthenticationController {
             content =
                 @Content(
                     mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
-                    schema = @Schema(description = "RFC 7807 错误详情格式"))),
+                    schema = @Schema(implementation = ProblemDetail.class))),
       })
   public ResponseEntity<UserResponse> getCurrentUser(
       @Parameter(hidden = true) @AuthenticationPrincipal Authentication authentication) {

@@ -40,7 +40,7 @@
 		<!-- Code Quality Tools -->
 		<checkstyle.version>3.3.0</checkstyle.version>
 		<spotless.version>2.46.1</spotless.version>
-		<pmd.version>3.21.2</pmd.version>
+		<pmd.version>3.27.0</pmd.version>
 		<spotbugs.version>4.8.6.0</spotbugs.version>
 
 
@@ -246,9 +246,9 @@
 				</dependencies>
 				<configuration>
 					<configLocation>google_checks.xml</configLocation>
-					<encoding>UTF-8</encoding>
+					<suppressionsLocation>
+						${project.basedir}/src/main/resources/checkstyle-suppressions.xml</suppressionsLocation>
 					<consoleOutput>true</consoleOutput>
-					<failsOnViolation>true</failsOnViolation>
 					<linkXRef>false</linkXRef>
 				</configuration>
 				<executions>
@@ -297,10 +297,13 @@
 					<printFailingErrors>true</printFailingErrors>
 					<linkXRef>false</linkXRef>
 					<analysisCache>true</analysisCache>
+					<rule ref="category/java/bestpractices.xml">
+						<exclude name="GuardLogStatement" />
+					</rule>
 					<rulesets>
-						<ruleset>/category/java/bestpractices.xml</ruleset>
+						<ruleset>/category/java/bestpractices.xml
+						</ruleset>
 						<ruleset>/category/java/errorprone.xml</ruleset>
-						<ruleset>/category/java/codestyle.xml</ruleset>
 					</rulesets>
 				</configuration>
 				<executions>

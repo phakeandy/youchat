@@ -52,7 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     } catch (BadCredentialsException ex) {
       throw new InvalidCredentialsException("用户名或密码错误");
     } catch (UsernameNotFoundException ex) {
-      throw new UserNotFoundException("用户不存在");
+      throw new UserNotFoundException();
     } catch (Exception ex) {
       throw new AuthenticationException("认证过程中发生错误: " + ex.getMessage(), ex);
     }

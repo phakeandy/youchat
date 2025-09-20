@@ -1,12 +1,26 @@
 package top.phakeandy.youchat.auth;
 
-public class InvalidCredentialsException extends AuthenticationException {
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.web.ErrorResponseException;
+
+public class InvalidCredentialsException extends ErrorResponseException {
 
   public InvalidCredentialsException(String message) {
-    super(message);
+    super(
+        HttpStatus.UNAUTHORIZED,
+        ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, message),
+        null
+    );
+    getBody().setTitle("凭据无效");
   }
 
   public InvalidCredentialsException(String message, Throwable cause) {
-    super(message, cause);
+    super(
+        HttpStatus.UNAUTHORIZED,
+        ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, message),
+        cause
+    );
+    getBody().setTitle("凭据无效");
   }
 }

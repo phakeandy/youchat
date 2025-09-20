@@ -93,7 +93,8 @@ class AuthenticationServiceTest {
 
     assertThatThrownBy(() -> authenticationService.authenticate(loginRequest, request, response))
         .isInstanceOf(InvalidCredentialsException.class)
-        .hasMessage("用户名或密码错误");
+        .extracting(ex -> ((InvalidCredentialsException) ex).getBody().getDetail())
+        .isEqualTo("用户名或密码错误");
   }
 
   @Test
@@ -105,7 +106,8 @@ class AuthenticationServiceTest {
 
     assertThatThrownBy(() -> authenticationService.authenticate(loginRequest, request, response))
         .isInstanceOf(UserNotFoundException.class)
-        .hasMessage("用户不存在");
+        .extracting(ex -> ((UserNotFoundException) ex).getBody().getDetail())
+        .isEqualTo("用户不存在");
   }
 
   @Test
