@@ -418,7 +418,7 @@ Better TDD 开发范式 + API First：
 
 #### 三、 集成测试 (@SpringBootTest + Testcontainers)
 
-- 文件命名：一个 Controller 对应一个集成测试类，使用 @SpringBootTest 和 @Testcontainers，在测试类名后面加上 IT (Integration Test) 例如，对于 AuthenticationController.java，它的集成测试类应该是 AuthenticationControllerIT.java。
+- 文件命名：一个 Controller 对应一个集成测试类，使用 @SpringBootTest 和 @Testcontainers，在测试类名后面加上Integration Test 例如，对于 AuthenticationController.java，它的集成测试类应该是 AuthenticationControllerIntegrationTest.java。
 - 核心焦点： 测试从 API 端点到数据库的**完整后端应用调用链**。
 - 测试环境： 使用 Testcontainers 启动**所有真实的外部依赖**，如 **PostgreSQL**、**Redis** 等，搭建一个准生产环境。
 - 测试范围： 测试跨越多个组件（Controller -> Service -> Mapper -> DB）的**完整业务工作流**，验证组件间的协作是否正确。

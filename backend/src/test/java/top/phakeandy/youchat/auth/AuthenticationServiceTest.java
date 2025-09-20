@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -132,5 +133,76 @@ class AuthenticationServiceTest {
     assertThatThrownBy(() -> authenticationService.authenticate(loginRequest, request, response))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("用户名和密码不能为空");
+  }
+
+  @Test
+  void shouldThrowExceptionWhenUsernameIsNull() {
+    LoginRequest loginRequest = new LoginRequest(null, "password123");
+
+    assertThatThrownBy(() -> authenticationService.authenticate(loginRequest, request, response))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("用户名和密码不能为空");
+  }
+
+  @Test
+  void shouldThrowExceptionWhenPasswordIsNull() {
+    LoginRequest loginRequest = new LoginRequest("testuser", null);
+
+    assertThatThrownBy(() -> authenticationService.authenticate(loginRequest, request, response))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("用户名和密码不能为空");
+  }
+
+  @Test
+  void shouldThrowExceptionWhenAuthenticationManagerThrowsGeneralException() {
+    LoginRequest loginRequest = new LoginRequest("testuser", "password123");
+
+    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+        .thenThrow(new RuntimeException("Database connection failed"));
+
+    assertThatThrownBy(() -> authenticationService.authenticate(loginRequest, request, response))
+        .isInstanceOf(AuthenticationException.class)
+        .extracting(ex -> ((AuthenticationException) ex).getBody().getDetail())
+        .isEqualTo("认证过程中发生错误: Database connection failed");
+  }
+
+  @Test
+  void shouldThrowExceptionWhenSecurityContextSaveFails() {
+    LoginRequest loginRequest = new LoginRequest("testuser", "password123");
+
+    lenient().when(userDetails.getUsername()).thenReturn("testuser");
+    lenient().doReturn(authorities).when(userDetails).getAuthorities();
+    lenient().when(authentication.getPrincipal()).thenReturn(userDetails);
+    lenient().when(authentication.isAuthenticated()).thenReturn(true);
+    lenient().when(securityContextHolderStrategy.createEmptyContext()).thenReturn(securityContext);
+    when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+        .thenReturn(authentication);
+
+    // Mock security context save failure
+    doThrow(new RuntimeException("Session save failed"))
+        .when(securityContextRepository)
+        .saveContext(any(), any(), any());
+
+    assertThatThrownBy(() -> authenticationService.authenticate(loginRequest, request, response))
+        .isInstanceOf(AuthenticationException.class)
+        .extracting(ex -> ((AuthenticationException) ex).getBody().getDetail())
+        .isEqualTo("认证过程中发生错误: Session save failed");
+  }
+
+  @Test
+  void shouldHandleNullAuthenticationInGetCurrentUser() {
+    assertThatThrownBy(() -> authenticationService.getCurrentUser(null))
+        .isInstanceOf(AuthenticationException.class)
+        .extracting(ex -> ((AuthenticationException) ex).getBody().getDetail())
+        .isEqualTo("用户未认证");
+  }
+
+  @Test
+  void shouldHandleNonUserDetailsPrincipalInGetCurrentUser() {
+    when(authentication.getPrincipal()).thenReturn("invalid-principal");
+    lenient().when(authentication.isAuthenticated()).thenReturn(true);
+
+    assertThatThrownBy(() -> authenticationService.getCurrentUser(authentication))
+        .isInstanceOf(ClassCastException.class);
   }
 }

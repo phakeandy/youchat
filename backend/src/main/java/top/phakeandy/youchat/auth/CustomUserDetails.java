@@ -24,10 +24,7 @@ public class CustomUserDetails extends Users implements UserDetails {
     super();
   }
 
-  /**
-   * 创建 CustomUserDetails 实例的静态工厂方法
-   * 避免在构造函数中调用可能抛出异常的方法
-   */
+  /** 创建 CustomUserDetails 实例的静态工厂方法 避免在构造函数中调用可能抛出异常的方法 */
   public static CustomUserDetails fromUsers(Users users) {
     CustomUserDetails details = new CustomUserDetails();
     // 安全地复制字段值
