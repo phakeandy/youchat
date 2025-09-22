@@ -20,12 +20,23 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import top.phakeandy.youchat.config.TestBase;
 
 @SpringBootTest
 @AutoConfigureWebMvc
-@ActiveProfiles("test")
+@ActiveProfiles("integration-test")
+@Testcontainers
 class UserControllerIntegrationTest extends TestBase {
+
+  @Container
+  private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");
+
+  @Container
+  private static final GenericContainer<?> redis = new GenericContainer<>("redis:latest").withExposedPorts(6379);
 
   @Autowired private WebApplicationContext context;
 

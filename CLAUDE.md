@@ -397,34 +397,17 @@ Better TDD 开发范式 + API First：
 
 ### Backend Testing Strategy
 
-#### 一、 单元测试 (JUnit 5 + Mockito)
+不再做单元和切片测试，专注于集成测试。
 
-- 核心焦点： 隔离测试单个类，主要覆盖 Service 层的业务逻辑、工具类、领域对象的行为等。
-- Mocking： 使用 Mockito 模拟外部依赖（如 Mapper、其他 Service），确保被测单元的独立性。
-- 断言： 使用 AssertJ 进行流式且可读性强的断言。
-- 覆盖率： 目标是为**关键和复杂的业务逻辑**提供**有意义的**高覆盖率。应将覆盖率报告作为**发现未测试代码路径**的工具，但**测试质量和有意义的断言**优先于追求具体的百分比数字。
-- 测试命名： 遵循 BDD (行为驱动开发) 风格: should\_预期行为\_when\_给定条件()。
-
-#### 二、 切片测试 (Spring Boot Test Slices)
-- @WebMvcTest： 专注于测试 Web 层（Controller、全局异常处理器、参数校验）。
-    - 在不加载完整应用上下文的情况下，独立测试 RESTful 端点。
-    - 使用 @MockBean 模拟 Service 层的依赖。
-    - 验证**请求参数校验 (@Valid)**、JSON 序列化/反序列化、HTTP 状态码、响应头，并使用 JsonPath 验证 JSON 响应体。
-    
-- @DataJpaTest： 专注于测试数据访问层（MyBatis Mapper）。
-    - 测试 SQL 查询、数据映射逻辑和基本的 CRUD 操作。
-    - 用 Testcontainers 启动一个真实的 PostgreSQL 数据库实例，以确保 100% 的环境一致性，避免使用 H2 内存数据库带来的方言差异问题。
-    - 利用 @Transactional 注解实现测试隔离，确保每个测试方法都在独立且自动回滚的事务中运行。
-
-#### 三、 集成测试 (@SpringBootTest + Testcontainers)
+#### 一、 集成测试 (@SpringBootTest + Testcontainers)
 
 - 文件命名：一个 Controller 对应一个集成测试类，使用 @SpringBootTest 和 @Testcontainers，在测试类名后面加上Integration Test 例如，对于 AuthenticationController.java，它的集成测试类应该是 AuthenticationControllerIntegrationTest.java。
 - 核心焦点： 测试从 API 端点到数据库的**完整后端应用调用链**。
-- 测试环境： 使用 Testcontainers 启动**所有真实的外部依赖**，如 **PostgreSQL**、**Redis** 等，搭建一个准生产环境。
+- 测试环境： 使用 Testcontainers 启动**所有真实的外部依赖**，如 **PostgreSQL**、**Redis** 等，不要使用 h2 数据库，搭建一个准生产环境。
 - 测试范围： 测试跨越多个组件（Controller -> Service -> Mapper -> DB）的**完整业务工作流**，验证组件间的协作是否正确。
 - 测试数据： 通过数据构建者（Data Builders）、固件（Fixtures）或 SQL 脚本（@Sql）来管理测试数据。
 
-#### 四、 API 测试最佳实践
+#### 二、 API 测试最佳实践
         
 - JSON 断言： 使用 JsonPath 进行健壮、精确的 JSON 响应体断言。
 - HTTP 状态码： 全面测试各种在 API 契约中描述的状态码
@@ -432,14 +415,7 @@ Better TDD 开发范式 + API First：
 - 场景覆盖： 测试所有关键场景，包括成功路径（Happy Path）、所有可预见的错误场景（如无效输入、资源不存在）和边界条件。
 - 列表接口： 针对返回列表的接口，必须测试其分页和筛选功能。
     
-#### 五、 安全性测试
-
-- 认证测试： 在**集成测试**中，测试真实的用户登录、Token 生成和后续请求的 Token 验证流程。
-- 授权测试： 在 **@WebMvcTest 切片测试**中，使用 Spring Security Test 提供的注解（如 @WithMockUser,它适用于绝大多数认证场景，包括基于 Session 的认证）来模拟不同角色/权限的用户，验证接口的访问控制是否符合预期。  
-    \-- 输入校验： 确保参数校验和净化逻辑能有效防止常见漏洞（如 SQL 注入、XSS），这部分测试主要在 @WebMvcTest 中进行。
-- 安全响应头： 验证 CORS、CSRF、CSP 等安全相关的响应头是否已正确配置。
-
-#### 六、 避免反模式
+#### 三、 避免反模式
 
 1. **不测试框架：** 禁止测试 Spring 注解（如 `@Autowired`）、Getter/Setter、Mybatis 的基础 CRUD 或 Jackson 序列化。假设框架工作正常。
 2. **不测试实现细节：** 只测试公共方法的行为（输入/输出、状态改变、对外交互），**绝不**通过反射测试私有方法。

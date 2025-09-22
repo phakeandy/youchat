@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("integration-test")
 class PasswordEncoderIntegrationTest extends TestBase {
 
   @Autowired private PasswordEncoder passwordEncoder;

@@ -1,5 +1,6 @@
 package top.phakeandy.youchat.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,15 +19,11 @@ import top.phakeandy.youchat.auth.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
   private final CustomUserDetailsService userService;
   private final PasswordEncoder passwordEncoder;
-
-  public SecurityConfig(CustomUserDetailsService userService, PasswordEncoder passwordEncoder) {
-    this.userService = userService;
-    this.passwordEncoder = passwordEncoder;
-  }
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,7 +38,7 @@ public class SecurityConfig {
                         "/api/v1/users",
                         "/scalar/**",
                         "/swagger-ui/**",
-                        "swagger-ui.html",
+                        "/swagger-ui.html",
                         "/v3/api-docs/**",
                         "/api/v1/public/**")
                     .permitAll()

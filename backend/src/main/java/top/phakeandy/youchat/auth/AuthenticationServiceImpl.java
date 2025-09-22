@@ -63,13 +63,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       // 如果认证失败，这里会抛出异常
       Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-      // 3. ！！！关键步骤：获取一个新的、干净的 SecurityContext 实例
-      //    不要再用 SecurityContextHolder.getContext()，因为它可能包含旧状态
-      SecurityContext context = SecurityContextHolder.createEmptyContext();
+      // 3. 获取一个新的、干净的 SecurityContext 实例
+      SecurityContext context = securityContextHolderStrategy.createEmptyContext();
       context.setAuthentication(authentication);
 
-      // 4. ！！！关键步骤：将新的上下文存入 Holder 和 Repository
-      SecurityContextHolder.setContext(context);
+      // 4. 将新的上下文存入 Holder 和 Repository
+      securityContextHolderStrategy.setContext(context);
       securityContextRepository.saveContext(context, request, response);
 
       // 5. 提取用户信息并返回

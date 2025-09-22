@@ -14,16 +14,7 @@ spring:
     username: integration
     password: integration
 
-  # JPA configuration for integration tests
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-
+  
   # Redis configuration - will be auto-configured by @ServiceConnection
   data:
     redis:
