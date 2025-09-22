@@ -9,6 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,22 +32,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     validateLoginRequest(loginRequest);
 
     try {
+      //   UsernamePasswordAuthenticationToken authenticationToken =
+      //       UsernamePasswordAuthenticationToken.unauthenticated(
+      //           loginRequest.username(), loginRequest.password());
+
+      //   Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+      //   SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+      //   context.setAuthentication(authentication);
+
+      //   securityContextHolderStrategy.setContext(context);
+      //   securityContextRepository.saveContext(context, request, response);
+
+      //   UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+      //   log.info("User {} logged in successfully", loginRequest.username());
+
+      //   return new LoginResponse(userDetails.getUsername(), userDetails.getAuthorities());
+      // 1. 创建未认证的 token
       UsernamePasswordAuthenticationToken authenticationToken =
           UsernamePasswordAuthenticationToken.unauthenticated(
               loginRequest.username(), loginRequest.password());
 
+      // 2. 委托 AuthenticationManager 进行认证
+      // 如果认证失败，这里会抛出异常
       Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-      SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+      // 3. ！！！关键步骤：获取一个新的、干净的 SecurityContext 实例
+      //    不要再用 SecurityContextHolder.getContext()，因为它可能包含旧状态
+      SecurityContext context = SecurityContextHolder.createEmptyContext();
       context.setAuthentication(authentication);
 
-      securityContextHolderStrategy.setContext(context);
+      // 4. ！！！关键步骤：将新的上下文存入 Holder 和 Repository
+      SecurityContextHolder.setContext(context);
       securityContextRepository.saveContext(context, request, response);
 
+      // 5. 提取用户信息并返回
       UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
       log.info("User {} logged in successfully", loginRequest.username());
-
       return new LoginResponse(userDetails.getUsername(), userDetails.getAuthorities());
 
     } catch (BadCredentialsException ex) {

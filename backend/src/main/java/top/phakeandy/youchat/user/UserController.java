@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import top.phakeandy.youchat.auth.CustomUserDetails;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -34,7 +35,7 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping
-  @SecurityRequirements // 注册接口不需要认证
+  @SecurityRequirements
   @Operation(summary = "用户注册", description = "创建新用户账户，需要提供用户名、密码和昵称")
   @ApiResponses(
       value = {
@@ -60,12 +61,11 @@ public class UserController {
                     mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                     schema = @Schema(implementation = ProblemDetail.class))),
       })
-  public ResponseEntity<CreateUserResponse> createUser(
+  @ResponseStatus(HttpStatus.CREATED)
+  public CreateUserResponse createUser(
       @Parameter(description = "用户注册请求参数", required = true) @Valid @RequestBody
           CreateUserRequest request) {
-
-    CreateUserResponse response = userService.createUser(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    return userService.createUser(request);
   }
 
   @GetMapping("/current")
@@ -89,9 +89,9 @@ public class UserController {
                     schema = @Schema(implementation = ProblemDetail.class))),
       })
   public ResponseEntity<UserResponse> getCurrentUser(
-      @Parameter(hidden = true) @AuthenticationPrincipal Authentication authentication) {
+      @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-    UserResponse response = userService.getCurrentUser(authentication);
+    UserResponse response = userService.getCurrentUser(customUserDetails);
     return ResponseEntity.ok(response);
   }
 

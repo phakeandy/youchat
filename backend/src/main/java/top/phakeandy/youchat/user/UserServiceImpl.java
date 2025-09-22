@@ -55,13 +55,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserResponse getCurrentUser(Authentication authentication) {
-    if (authentication == null || !authentication.isAuthenticated()) {
-      throw new AuthenticationException("用户未认证");
+  public UserResponse getCurrentUser(CustomUserDetails customUserDetails) {
+    if (customUserDetails == null) {
+      throw new AuthenticationException("无法获取当前用户信息");
     }
 
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    return new UserResponse(userDetails.getUsername(), userDetails.getAuthorities());
+    return new UserResponse(customUserDetails.getUsername(), customUserDetails.getAuthorities());
   }
 
   @Override

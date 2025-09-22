@@ -36,14 +36,14 @@ public class SecurityConfig {
                     .ignoringRequestMatchers("/api/v1/auth/**", "/api/v1/users"))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/v1/auth/**")
-                    .permitAll()
-                    .requestMatchers("/api/v1/users")
-                    .permitAll()
-                    .requestMatchers(
-                        "/scalar/**", "/swagger-ui/**", "swagger-ui.html", "/v3/api-docs/**")
-                    .permitAll()
-                    .requestMatchers("/api/v1/public/**")
+                auth.requestMatchers(
+                        "/api/v1/auth/**",
+                        "/api/v1/users",
+                        "/scalar/**",
+                        "/swagger-ui/**",
+                        "swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/api/v1/public/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

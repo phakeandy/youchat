@@ -26,5 +26,5 @@ import io.swagger.v3.oas.annotations.servers.Server;
     type = SecuritySchemeType.APIKEY,
     in = SecuritySchemeIn.COOKIE,
     description = "基于 Session 的身份验证。用户登录成功后，服务器会创建 HTTP Session 并通过 Cookie 返回 session ID。",
-    paramName = "JSESSIONID")
+    paramName = "SESSION")
 public class OpenapiConfig {}
