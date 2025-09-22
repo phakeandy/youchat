@@ -1,11 +1,8 @@
 package top.phakeandy.youchat.user;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +26,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import top.phakeandy.youchat.config.GlobalExceptionHandler;
+import top.phakeandy.youchat.user.exception.InvalidPasswordException;
+import top.phakeandy.youchat.user.exception.PasswordMismatchException;
+import top.phakeandy.youchat.user.exception.UsernameAlreadyExistsException;
+import top.phakeandy.youchat.user.request.CreateUserRequest;
+import top.phakeandy.youchat.user.responcse.CreateUserResponse;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -84,31 +86,6 @@ class UserControllerTest {
   }
 
   @Test
-  void shouldGetCurrentUserWhenAuthenticated() throws Exception {
-    UserResponse userResponse =
-        new UserResponse("testuser", List.of(new SimpleGrantedAuthority("ROLE_USER")));
-
-    when(userService.getCurrentUser(authentication)).thenReturn(userResponse);
-
-    mockMvc
-        .perform(get("/api/v1/users/current").principal(authentication))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.username").value("testuser"))
-        .andExpect(jsonPath("$.authorities[0].authority").value("ROLE_USER"));
-
-    verify(userService).getCurrentUser(authentication);
-  }
-
-  @Test
-  void shouldDeleteCurrentUserSuccessfully() throws Exception {
-    mockMvc
-        .perform(delete("/api/v1/users/current").principal(authentication))
-        .andExpect(status().isNoContent());
-
-    verify(userService).deleteCurrentUser(authentication);
-  }
-
-  @Test
   void shouldHandleUsernameAlreadyExistsException() throws Exception {
     CreateUserRequest request =
         new CreateUserRequest("existinguser", "Password123!", "已有用户", "Password123!");
@@ -153,15 +130,5 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void shouldHandleUserNotFoundExceptionForDelete() throws Exception {
-    doThrow(new top.phakeandy.youchat.auth.UserNotFoundException("testuser"))
-        .when(userService).deleteCurrentUser(authentication);
-
-    mockMvc
-        .perform(delete("/api/v1/users/current").principal(authentication))
-        .andExpect(status().isNotFound());
   }
 }

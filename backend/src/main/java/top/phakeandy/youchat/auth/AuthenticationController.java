@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.phakeandy.youchat.auth.request.LoginRequest;
+import top.phakeandy.youchat.auth.response.LoginResponse;
 
 @RestController
 @RequestMapping("/api/v1/auth")

@@ -30,6 +30,11 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.context.SecurityContextRepository;
+import top.phakeandy.youchat.auth.exception.AuthenticationException;
+import top.phakeandy.youchat.auth.exception.InvalidCredentialsException;
+import top.phakeandy.youchat.auth.exception.UserNotFoundException;
+import top.phakeandy.youchat.auth.request.LoginRequest;
+import top.phakeandy.youchat.auth.response.LoginResponse;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
@@ -111,7 +116,6 @@ class AuthenticationServiceTest {
         .isEqualTo("用户不存在");
   }
 
-  
   @Test
   void shouldValidateLoginRequestFields() {
     LoginRequest loginRequest = new LoginRequest("", "");
@@ -174,5 +178,4 @@ class AuthenticationServiceTest {
         .extracting(ex -> ((AuthenticationException) ex).getBody().getDetail())
         .isEqualTo("认证过程中发生错误: Session save failed");
   }
-
-  }
+}

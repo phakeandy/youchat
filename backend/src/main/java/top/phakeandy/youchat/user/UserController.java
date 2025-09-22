@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import top.phakeandy.youchat.auth.CustomUserDetails;
+import top.phakeandy.youchat.user.request.CreateUserRequest;
+import top.phakeandy.youchat.user.responcse.CreateUserResponse;
+import top.phakeandy.youchat.user.responcse.UserResponse;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -111,8 +113,7 @@ public class UserController {
       })
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteCurrentUser(
-      @Parameter(hidden = true) @AuthenticationPrincipal Authentication authentication) {
-
-    userService.deleteCurrentUser(authentication);
+      @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    userService.deleteCurrentUser(customUserDetails);
   }
 }

@@ -1,4 +1,4 @@
-package top.phakeandy.youchat.user;
+package top.phakeandy.youchat.user.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

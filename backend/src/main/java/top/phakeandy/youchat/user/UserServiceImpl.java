@@ -2,14 +2,18 @@ package top.phakeandy.youchat.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.phakeandy.youchat.auth.AuthenticationException;
 import top.phakeandy.youchat.auth.CustomUserDetails;
 import top.phakeandy.youchat.auth.CustomUserDetailsService;
-import top.phakeandy.youchat.auth.UserNotFoundException;
+import top.phakeandy.youchat.auth.exception.AuthenticationException;
+import top.phakeandy.youchat.auth.exception.UserNotFoundException;
+import top.phakeandy.youchat.user.exception.InvalidPasswordException;
+import top.phakeandy.youchat.user.exception.PasswordMismatchException;
+import top.phakeandy.youchat.user.exception.UsernameAlreadyExistsException;
+import top.phakeandy.youchat.user.request.CreateUserRequest;
+import top.phakeandy.youchat.user.responcse.CreateUserResponse;
+import top.phakeandy.youchat.user.responcse.UserResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -65,13 +69,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public void deleteCurrentUser(Authentication authentication) {
-    if (authentication == null || !authentication.isAuthenticated()) {
-      throw new UserNotFoundException("用户未认证");
+  public void deleteCurrentUser(CustomUserDetails customUserDetails) {
+    if (customUserDetails == null) {
+      throw new AuthenticationException("无法获取当前用户信息");
     }
 
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    String username = userDetails.getUsername();
+    final var username = customUserDetails.getUsername();
 
     log.debug("Deleting current user: {}", username);
 

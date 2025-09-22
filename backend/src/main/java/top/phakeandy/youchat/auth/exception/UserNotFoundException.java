@@ -1,4 +1,4 @@
-package top.phakeandy.youchat.auth;
+package top.phakeandy.youchat.auth.exception;
 
 import java.util.UUID;
 import org.springframework.http.HttpStatus;

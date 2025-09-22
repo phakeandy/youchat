@@ -27,6 +27,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import top.phakeandy.youchat.auth.exception.InvalidCredentialsException;
+import top.phakeandy.youchat.auth.request.LoginRequest;
+import top.phakeandy.youchat.auth.response.LoginResponse;
 import top.phakeandy.youchat.config.GlobalExceptionHandler;
 
 @ExtendWith(MockitoExtension.class)

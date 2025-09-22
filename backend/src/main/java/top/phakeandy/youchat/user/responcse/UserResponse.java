@@ -1,4 +1,4 @@
-package top.phakeandy.youchat.user;
+package top.phakeandy.youchat.user.responcse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Collection;

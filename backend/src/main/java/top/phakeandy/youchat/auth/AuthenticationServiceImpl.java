@@ -16,6 +16,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import top.phakeandy.youchat.auth.exception.AuthenticationException;
+import top.phakeandy.youchat.auth.exception.InvalidCredentialsException;
+import top.phakeandy.youchat.auth.exception.UserNotFoundException;
+import top.phakeandy.youchat.auth.request.LoginRequest;
+import top.phakeandy.youchat.auth.response.LoginResponse;
 
 @Service
 @RequiredArgsConstructor
