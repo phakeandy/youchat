@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Locale;
+import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,15 +52,16 @@ class UserControllerIntegrationTest {
   @Autowired private PasswordEncoder passwordEncoder;
 
   private MockMvc mockMvc;
+  private Users testUser;
 
   @BeforeEach
   void setup() {
     mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
-    Users testUser = new Users();
-    testUser.setUsername("testuser");
+    testUser = new Users();
+    testUser.setUsername("testuser"); // 固定用户名，匹配 @WithMockUser
     testUser.setPassword(passwordEncoder.encode("password123"));
-    testUser.setNickname("测试用户");
+    testUser.setNickname(new Faker(Locale.CHINA).name().fullName());
     testUser.setAvatarUrl("default-avatar.png");
     usersMapper.insertSelective(testUser);
   }

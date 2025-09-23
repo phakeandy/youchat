@@ -36,6 +36,7 @@
 		<springdoc.version>2.8.13</springdoc.version>
 		<mybatis-spring.version>3.0.5</mybatis-spring.version>
 		<testcontainers.version>1.19.7</testcontainers.version>
+		<datafaker.version>2.5.0</datafaker.version>
 
 		<!-- Code Quality Tools -->
 		<checkstyle.version>3.3.0</checkstyle.version>
@@ -125,6 +126,13 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- 假数据依赖 -->
+		<dependency>
+			<groupId>net.datafaker</groupId>
+			<artifactId>datafaker</artifactId>
+			<version>${datafaker.version}</version>
+		</dependency>
+
 		<!-- 测试依赖 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -140,12 +148,6 @@
 			<groupId>org.mybatis.spring.boot</groupId>
 			<artifactId>mybatis-spring-boot-starter-test</artifactId>
 			<version>3.0.5</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- H2 Database for testing -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- Testcontainers for integration testing -->
@@ -221,7 +223,6 @@
 					</execution>
 				</executions>
 				<configuration>
-					<verbose>true</verbose>
 					<overwrite>true</overwrite>
 				</configuration>
 				<dependencies>

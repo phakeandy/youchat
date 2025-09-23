@@ -403,9 +403,8 @@ Better TDD 开发范式 + API First：
 
 - 文件命名：一个 Controller 对应一个集成测试类，使用 @SpringBootTest 和 @Testcontainers，在测试类名后面加上Integration Test 例如，对于 AuthenticationController.java，它的集成测试类应该是 AuthenticationControllerIntegrationTest.java。
 - 核心焦点： 测试从 API 端点到数据库的**完整后端应用调用链**。
-- 测试环境： 使用 Testcontainers 启动**所有真实的外部依赖**，如 **PostgreSQL**、**Redis** 等，不要使用 h2 数据库，搭建一个准生产环境。
-- 测试范围： 测试跨越多个组件（Controller -> Service -> Mapper -> DB）的**完整业务工作流**，验证组件间的协作是否正确。
-- 测试数据： 通过数据构建者（Data Builders）、固件（Fixtures）或 SQL 脚本（@Sql）来管理测试数据。
+- 测试环境： 使用 Testcontainers 和 `@@ServiceConnection` 启动**所有真实的外部依赖**，如 **PostgreSQL**、**Redis** 等，不要使用 h2 数据库，搭建一个准生产环境。
+- 测试数据： 通过 DataFaker 、Mybatis Dynamic SQL 来管理测试数据。
 
 #### 二、 API 测试最佳实践
         
@@ -425,6 +424,11 @@ Better TDD 开发范式 + API First：
 4. **聚焦业务逻辑：** 测试应覆盖核心的业务规则、条件分支、计算和异常流程。
 5. 无需性能测试
 6. 无需强调测试覆盖度，不要编写低质量的“凑数”测试。
+
+### Backend Code Style
+
+1. 使用 `"string".formatted()` 而不是 `String.format()`
+
 
 ## Project Structure
 

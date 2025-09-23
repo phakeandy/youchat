@@ -23,9 +23,9 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import top.phakeandy.youchat.auth.request.LoginRequest;
 import top.phakeandy.youchat.mapper.UsersMapper;
 import top.phakeandy.youchat.model.Users;
+import top.phakeandy.youchat.test.TestDataFaker;
 
 @SpringBootTest
 @AutoConfigureWebMvc
@@ -49,25 +49,19 @@ class AuthenticationControllerIntegrationTest {
   @Autowired private PasswordEncoder passwordEncoder;
 
   private MockMvc mockMvc;
+  private Users testUser;
 
   @BeforeEach
   void setup() {
     mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
-    // usersMapper.delete(DeleteDSLCompleter.allRows());
-
-    // Create test user for login tests
-    Users testUser = new Users();
-    testUser.setUsername("testuser");
-    testUser.setPassword(passwordEncoder.encode("password123"));
-    testUser.setNickname("测试用户");
-    testUser.setAvatarUrl("default-avatar.png");
+    // Create test user for login tests using DataFaker
+    testUser = TestDataFaker.createRandomUser(passwordEncoder);
     usersMapper.insertSelective(testUser);
   }
 
   @Test
   void shouldLoginSuccessfully_whenValidCredentialsProvided() throws Exception {
-    LoginRequest loginRequest = new LoginRequest("testuser", "password123");
 
     mockMvc
         .perform(
@@ -77,12 +71,13 @@ class AuthenticationControllerIntegrationTest {
                 .content(
                     """
                     {
-                      "username": "testuser",
+                      "username": "%s",
                       "password": "password123"
                     }
-                    """))
+                    """
+                        .formatted(testUser.getUsername())))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.username").value("testuser"))
+        .andExpect(jsonPath("$.username").value(testUser.getUsername()))
         .andExpect(jsonPath("$.authorities").isArray());
   }
 
@@ -107,6 +102,9 @@ class AuthenticationControllerIntegrationTest {
 
   @Test
   void shouldRegisterSuccessfully_whenValidDataProvided() throws Exception {
+    TestDataFaker.UserWithRawPassword newUserWithPassword =
+        TestDataFaker.createRandomUserWithRawPassword(passwordEncoder);
+
     mockMvc
         .perform(
             post("/api/v1/auth/register")
@@ -115,16 +113,21 @@ class AuthenticationControllerIntegrationTest {
                 .content(
                     """
                     {
-                      "username": "newuser123",
-                      "password": "Password123!",
-                      "nickname": "测试用户",
-                      "confirmPassword": "Password123!"
+                      "username": "%s",
+                      "password": "%s",
+                      "nickname": "%s",
+                      "confirmPassword": "%s"
                     }
-                    """))
+                    """
+                        .formatted(
+                            newUserWithPassword.user.getUsername(),
+                            newUserWithPassword.rawPassword,
+                            newUserWithPassword.user.getNickname(),
+                            newUserWithPassword.rawPassword)))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.message").value("用户注册成功"))
-        .andExpect(jsonPath("$.username").value("newuser123"))
-        .andExpect(jsonPath("$.nickname").value("测试用户"))
+        .andExpect(jsonPath("$.username").value(newUserWithPassword.user.getUsername()))
+        .andExpect(jsonPath("$.nickname").value(newUserWithPassword.user.getNickname()))
         .andExpect(jsonPath("$.userId").exists());
   }
 
@@ -152,6 +155,9 @@ class AuthenticationControllerIntegrationTest {
   @Test
   void shouldReturn409_whenUsernameAlreadyExists() throws Exception {
     // First create a user
+    TestDataFaker.UserWithRawPassword firstUserWithPassword =
+        TestDataFaker.createRandomUserWithRawPassword(passwordEncoder);
+
     mockMvc
         .perform(
             post("/api/v1/auth/register")
@@ -160,15 +166,23 @@ class AuthenticationControllerIntegrationTest {
                 .content(
                     """
                     {
-                      "username": "duplicateuser",
-                      "password": "Password123!",
-                      "nickname": "用户1",
-                      "confirmPassword": "Password123!"
+                      "username": "%s",
+                      "password": "%s",
+                      "nickname": "%s",
+                      "confirmPassword": "%s"
                     }
-                    """))
+                    """
+                        .formatted(
+                            firstUserWithPassword.user.getUsername(),
+                            firstUserWithPassword.rawPassword,
+                            firstUserWithPassword.user.getNickname(),
+                            firstUserWithPassword.rawPassword)))
         .andExpect(status().isCreated());
 
     // Try to create another user with same username
+    TestDataFaker.UserWithRawPassword secondUserWithPassword =
+        TestDataFaker.createRandomUserWithRawPassword(passwordEncoder);
+
     mockMvc
         .perform(
             post("/api/v1/auth/register")
@@ -177,14 +191,21 @@ class AuthenticationControllerIntegrationTest {
                 .content(
                     """
                     {
-                      "username": "duplicateuser",
-                      "password": "Password123!",
-                      "nickname": "用户2",
-                      "confirmPassword": "Password123!"
+                      "username": "%s",
+                      "password": "%s",
+                      "nickname": "%s",
+                      "confirmPassword": "%s"
                     }
-                    """))
+                    """
+                        .formatted(
+                            firstUserWithPassword.user.getUsername(), // 使用相同的用户名
+                            secondUserWithPassword.rawPassword,
+                            secondUserWithPassword.user.getNickname(),
+                            secondUserWithPassword.rawPassword)))
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.status").value(409))
-        .andExpect(jsonPath("$.detail").value("用户名 duplicateuser 已存在。"));
+        .andExpect(
+            jsonPath("$.detail")
+                .value("用户名 %s 已存在。".formatted(firstUserWithPassword.user.getUsername())));
   }
 }
