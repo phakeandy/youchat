@@ -7,39 +7,24 @@ spring:
     compose:
       enabled: false
 
-  # Database configuration will be auto-configured by @ServiceConnection
-  datasource:
-    # These will be overridden by Testcontainers
-    url: jdbc:tc:postgresql:15-alpine:///youchat_integration
-    username: integration
-    password: integration
+  # # Database configuration will be auto-configured by @ServiceConnection
+  # datasource:
+  #   # These will be overridden by Testcontainers
+  #   url: jdbc:tc:postgresql:15-alpine:///youchat_integration
+  #   username: integration
+  #   password: integration
 
-  
-  # Redis configuration - will be auto-configured by @ServiceConnection
-  data:
-    redis:
-      host: localhost
-      port: 6379
+  # # Redis configuration - will be auto-configured by @ServiceConnection
+  # data:
+  #   redis:
+  #     host: localhost
+  #     port: 6379
 
   # Enable Flyway for integration tests
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-
-  # Logging for integration tests - slightly more verbose than unit tests
-  logging:
-    level:
-      root: WARN
-      org.springframework: WARN
-      org.springframework.boot: WARN
-      org.springframework.test: WARN
-      org.testcontainers: INFO
-      org.springframework.web: WARN
-      org.hibernate: WARN
-      org.flywaydb: WARN
-      org.mybatis: WARN
-      top.phakeandy.youchat: INFO
 
   # Session configuration for integration tests
   session:
@@ -53,19 +38,18 @@ spring:
     database:
       replace: none
 
+logging:
+  level:
+    root: WARN
+    org:
+      testcontainers: INFO
+    top:
+      phakeandy:
+        youchat: DEBUG
+
 ---
 # Profile for integration test with real containers
 spring:
   config:
     activate:
       on-profile: integration-test
-
-  # Actuator configuration for integration tests
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: health,info
-    endpoint:
-      health:
-        show-details: when-authorized

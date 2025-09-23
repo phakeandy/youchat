@@ -1,18 +1,22 @@
 package top.phakeandy.youchat.user;
 
+import static org.mybatis.dynamic.sql.SqlBuilder.isEqualTo;
+import static top.phakeandy.youchat.mapper.UsersDynamicSqlSupport.username;
+
+import io.micrometer.common.lang.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.phakeandy.youchat.auth.CustomUserDetails;
 import top.phakeandy.youchat.auth.CustomUserDetailsService;
-import top.phakeandy.youchat.auth.exception.AuthenticationException;
-import top.phakeandy.youchat.auth.exception.UserNotFoundException;
+import top.phakeandy.youchat.auth.request.RegisterRequest;
+import top.phakeandy.youchat.auth.response.RegisterResponse;
+import top.phakeandy.youchat.mapper.UsersMapper;
 import top.phakeandy.youchat.user.exception.InvalidPasswordException;
 import top.phakeandy.youchat.user.exception.PasswordMismatchException;
 import top.phakeandy.youchat.user.exception.UsernameAlreadyExistsException;
-import top.phakeandy.youchat.auth.request.RegisterRequest;
-import top.phakeandy.youchat.auth.response.RegisterResponse;
 import top.phakeandy.youchat.user.responcse.UserResponse;
 
 @Service
@@ -21,6 +25,7 @@ import top.phakeandy.youchat.user.responcse.UserResponse;
 public class UserServiceImpl implements UserService {
 
   private final CustomUserDetailsService customUserDetailsService;
+  private final UsersMapper usersMapper;
 
   @Override
   @Transactional
@@ -59,34 +64,16 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserResponse getCurrentUser(CustomUserDetails customUserDetails) {
-    if (customUserDetails == null) {
-      throw new AuthenticationException("无法获取当前用户信息");
-    }
-
-    return new UserResponse(customUserDetails.getUsername(), customUserDetails.getAuthorities());
+  public UserResponse getCurrentUser(UserDetails userDetails) {
+    return new UserResponse(userDetails.getUsername(), userDetails.getAuthorities());
   }
 
   @Override
   @Transactional
-  public void deleteCurrentUser(CustomUserDetails customUserDetails) {
-    if (customUserDetails == null) {
-      throw new AuthenticationException("无法获取当前用户信息");
-    }
-
-    final var username = customUserDetails.getUsername();
-
-    log.debug("Deleting current user: {}", username);
-
-    // 查找用户
-    CustomUserDetails userToDelete =
-        customUserDetailsService
-            .findByUsername(username)
-            .orElseThrow(() -> new UserNotFoundException(username));
-
-    // 删除用户
-    customUserDetailsService.deleteUser(userToDelete.getId());
-
-    log.info("User deleted successfully: {}", username);
+  public void deleteCurrentUser(@NonNull UserDetails userDetails) {
+    final var usernameValue = userDetails.getUsername();
+    log.debug("Deleting current user: {}", usernameValue);
+    usersMapper.delete(c -> c.where(username, isEqualTo(usernameValue)));
+    log.info("User deleted successfully: {}", usernameValue);
   }
 }

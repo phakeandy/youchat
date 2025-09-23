@@ -12,39 +12,55 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import top.phakeandy.youchat.config.TestBase;
+import top.phakeandy.youchat.mapper.UsersMapper;
+import top.phakeandy.youchat.model.Users;
 
 @SpringBootTest
 @AutoConfigureWebMvc
 @ActiveProfiles("integration-test")
 @Testcontainers
-class UserControllerIntegrationTest extends TestBase {
+@Transactional
+class UserControllerIntegrationTest {
 
-  @Container
+  @Container @ServiceConnection
   private static final PostgreSQLContainer<?> postgres =
       new PostgreSQLContainer<>("postgres:latest");
 
   @Container
+  @ServiceConnection
+  @SuppressWarnings("resource")
   private static final GenericContainer<?> redis =
       new GenericContainer<>("redis:latest").withExposedPorts(6379);
 
   @Autowired private WebApplicationContext context;
+  @Autowired private UsersMapper usersMapper;
+  @Autowired private PasswordEncoder passwordEncoder;
 
   private MockMvc mockMvc;
 
   @BeforeEach
   void setup() {
     mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+
+    Users testUser = new Users();
+    testUser.setUsername("testuser");
+    testUser.setPassword(passwordEncoder.encode("password123"));
+    testUser.setNickname("测试用户");
+    testUser.setAvatarUrl("default-avatar.png");
+    usersMapper.insertSelective(testUser);
   }
 
   @Test
@@ -59,7 +75,7 @@ class UserControllerIntegrationTest extends TestBase {
       roles = {"USER"})
   void shouldGetCurrentUser_whenUserIsAuthenticated() throws Exception {
     mockMvc
-        .perform(get("/api/v1/users/current"))
+        .perform(get("/api/v1/users/current").with(csrf()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").value("testuser"))
         .andExpect(jsonPath("$.authorities").isArray());

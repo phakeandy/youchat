@@ -1,6 +1,6 @@
 package top.phakeandy.youchat.user;
 
-import top.phakeandy.youchat.auth.CustomUserDetails;
+import org.springframework.security.core.userdetails.UserDetails;
 import top.phakeandy.youchat.auth.request.RegisterRequest;
 import top.phakeandy.youchat.auth.response.RegisterResponse;
 import top.phakeandy.youchat.user.responcse.UserResponse;
@@ -11,8 +11,8 @@ public interface UserService {
   RegisterResponse createUser(RegisterRequest request);
 
   /** 获取当前用户信息 */
-  UserResponse getCurrentUser(CustomUserDetails customUserDetails);
+  UserResponse getCurrentUser(UserDetails userDetails);
 
   /** 删除当前用户账户 */
-  void deleteCurrentUser(CustomUserDetails customUserDetails);
+  void deleteCurrentUser(UserDetails userDetails);
 }

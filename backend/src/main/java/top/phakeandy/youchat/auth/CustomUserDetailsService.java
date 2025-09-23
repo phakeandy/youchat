@@ -145,16 +145,6 @@ public class CustomUserDetailsService implements UserDetailsService {
   }
 
   @Transactional
-  public void deleteUser(Long id) {
-    log.debug("Deleting user with id: {}", id);
-
-    int result = usersMapper.deleteByPrimaryKey(id);
-    if (result != 1) {
-      throw new RuntimeException("Failed to delete user");
-    }
-  }
-
-  @Transactional
   public boolean existsByUsername(String username) {
     log.debug("Checking if username exists: {}", username);
 
