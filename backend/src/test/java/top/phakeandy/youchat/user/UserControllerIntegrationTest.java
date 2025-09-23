@@ -4,7 +4,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -33,10 +31,12 @@ import top.phakeandy.youchat.config.TestBase;
 class UserControllerIntegrationTest extends TestBase {
 
   @Container
-  private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");
+  private static final PostgreSQLContainer<?> postgres =
+      new PostgreSQLContainer<>("postgres:latest");
 
   @Container
-  private static final GenericContainer<?> redis = new GenericContainer<>("redis:latest").withExposedPorts(6379);
+  private static final GenericContainer<?> redis =
+      new GenericContainer<>("redis:latest").withExposedPorts(6379);
 
   @Autowired private WebApplicationContext context;
 
@@ -44,18 +44,13 @@ class UserControllerIntegrationTest extends TestBase {
 
   @BeforeEach
   void setup() {
-    mockMvc = MockMvcBuilders.webAppContextSetup(context)
-        .apply(springSecurity())
-        .build();
+    mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
   }
 
-  
   @Test
   @WithAnonymousUser
   void shouldReturn401_whenGetCurrentUserWithoutAuthentication() throws Exception {
-    mockMvc
-        .perform(get("/api/v1/users/current"))
-        .andExpect(status().isUnauthorized());
+    mockMvc.perform(get("/api/v1/users/current")).andExpect(status().isUnauthorized());
   }
 
   @Test
@@ -74,7 +69,7 @@ class UserControllerIntegrationTest extends TestBase {
   @WithAnonymousUser
   void shouldReturn401_whenDeleteCurrentUserWithoutAuthentication() throws Exception {
     mockMvc
-        .perform(delete("/api/v1/users/current"))
+        .perform(delete("/api/v1/users/current").with(csrf()))
         .andExpect(status().isUnauthorized());
   }
 

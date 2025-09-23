@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,27 +28,7 @@ public class CustomUserDetails extends Users implements UserDetails {
   /** 创建 CustomUserDetails 实例的静态工厂方法 避免在构造函数中调用可能抛出异常的方法 */
   public static CustomUserDetails fromUsers(Users users) {
     CustomUserDetails details = new CustomUserDetails();
-    // 安全地复制字段值
-    try {
-      details.setId(users.getId());
-      details.setUsername(users.getUsername());
-      details.setPassword(users.getPassword());
-      details.setNickname(users.getNickname());
-      details.setAvatarUrl(users.getAvatarUrl());
-      details.setSettings(users.getSettings());
-      details.setCreatedAt(users.getCreatedAt());
-      details.setUpdatedAt(users.getUpdatedAt());
-    } catch (Exception e) {
-      // 如果复制过程中出现异常，使用默认值
-      details.setId(null);
-      details.setUsername("");
-      details.setPassword("");
-      details.setNickname("");
-      details.setAvatarUrl("");
-      details.setSettings(null);
-      details.setCreatedAt(null);
-      details.setUpdatedAt(null);
-    }
+    BeanUtils.copyProperties(users, details);
     return details;
   }
 

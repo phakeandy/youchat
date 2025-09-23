@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mybatis.dynamic.sql.delete.DeleteDSLCompleter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,10 +34,12 @@ import top.phakeandy.youchat.model.Users;
 class AuthenticationControllerIntegrationTest extends TestBase {
 
   @Container
-  private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");
+  private static final PostgreSQLContainer<?> postgres =
+      new PostgreSQLContainer<>("postgres:latest");
 
   @Container
-  private static final GenericContainer<?> redis = new GenericContainer<>("redis:latest").withExposedPorts(6379);
+  private static final GenericContainer<?> redis =
+      new GenericContainer<>("redis:latest").withExposedPorts(6379);
 
   @Autowired private WebApplicationContext context;
   @Autowired private UsersMapper usersMapper;
@@ -48,14 +51,16 @@ class AuthenticationControllerIntegrationTest extends TestBase {
   void setup() {
     mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
+    usersMapper.delete(DeleteDSLCompleter.allRows());
+
     // Create test user for login tests
     Users testUser = new Users();
-    testUser.setId(1L);
+    // testUser.setId(1L);
     testUser.setUsername("testuser");
     testUser.setPassword(passwordEncoder.encode("password123"));
     testUser.setNickname("测试用户");
     testUser.setAvatarUrl("default-avatar.png");
-    usersMapper.insert(testUser);
+    usersMapper.insertSelective(testUser);
   }
 
   @Test
