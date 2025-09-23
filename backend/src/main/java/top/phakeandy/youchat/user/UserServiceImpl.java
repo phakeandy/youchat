@@ -11,8 +11,8 @@ import top.phakeandy.youchat.auth.exception.UserNotFoundException;
 import top.phakeandy.youchat.user.exception.InvalidPasswordException;
 import top.phakeandy.youchat.user.exception.PasswordMismatchException;
 import top.phakeandy.youchat.user.exception.UsernameAlreadyExistsException;
-import top.phakeandy.youchat.user.request.CreateUserRequest;
-import top.phakeandy.youchat.user.responcse.CreateUserResponse;
+import top.phakeandy.youchat.auth.request.RegisterRequest;
+import top.phakeandy.youchat.auth.response.RegisterResponse;
 import top.phakeandy.youchat.user.responcse.UserResponse;
 
 @Service
@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public CreateUserResponse createUser(CreateUserRequest request) {
+  public RegisterResponse createUser(RegisterRequest request) {
     log.debug("Creating new user: {}", request.username());
 
     // 验证密码确认
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
       log.info("User created successfully: {}", createdUser.getUsername());
 
-      return new CreateUserResponse(
+      return new RegisterResponse(
           "用户注册成功", createdUser.getId(), createdUser.getUsername(), createdUser.getNickname());
 
     } catch (IllegalArgumentException e) {

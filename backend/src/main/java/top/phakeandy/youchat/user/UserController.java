@@ -36,40 +36,6 @@ public class UserController {
 
   private final UserService userService;
 
-  @PostMapping
-  @SecurityRequirements
-  @Operation(summary = "用户注册", description = "创建新用户账户，需要提供用户名、密码和昵称")
-  @ApiResponses(
-      value = {
-        @ApiResponse(
-            responseCode = "201",
-            description = "用户注册成功，返回用户信息",
-            content =
-                @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = CreateUserResponse.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description = "请求参数错误，如密码格式错误、密码确认不匹配等",
-            content =
-                @Content(
-                    mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
-                    schema = @Schema(implementation = ProblemDetail.class))),
-        @ApiResponse(
-            responseCode = "409",
-            description = "用户名已存在冲突",
-            content =
-                @Content(
-                    mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
-                    schema = @Schema(implementation = ProblemDetail.class))),
-      })
-  @ResponseStatus(HttpStatus.CREATED)
-  public CreateUserResponse createUser(
-      @Parameter(description = "用户注册请求参数", required = true) @Valid @RequestBody
-          CreateUserRequest request) {
-    return userService.createUser(request);
-  }
-
   @GetMapping("/current")
   @SecurityRequirement(name = "sessionAuth")
   @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的详细信息，包括用户名和权限列表。需要用户已登录并持有有效会话。")

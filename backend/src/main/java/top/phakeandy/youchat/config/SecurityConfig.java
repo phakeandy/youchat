@@ -3,15 +3,15 @@ package top.phakeandy.youchat.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -30,12 +30,15 @@ public class SecurityConfig {
     http.csrf(
             csrf ->
                 csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    .ignoringRequestMatchers("/api/v1/auth/**", "/api/v1/users"))
+                    .ignoringRequestMatchers("/api/v1/auth/**", "/api/v1/register"))
+        .exceptionHandling(ex ->
+            ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+        )
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
                         "/api/v1/auth/**",
-                        "/api/v1/users",
+                        "/api/v1/register",
                         "/scalar/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
@@ -74,10 +77,5 @@ public class SecurityConfig {
   @Bean
   SecurityContextRepository securityContextRepository() {
     return new HttpSessionSecurityContextRepository();
-  }
-
-  @Bean
-  SecurityContextHolderStrategy securityContextHolderStrategy() {
-    return SecurityContextHolder.getContextHolderStrategy();
   }
 }

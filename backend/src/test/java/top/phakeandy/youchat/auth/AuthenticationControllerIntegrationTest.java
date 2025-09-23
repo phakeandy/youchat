@@ -97,4 +97,87 @@ class AuthenticationControllerIntegrationTest extends TestBase {
         .andExpect(jsonPath("$.status").value(400))
         .andExpect(jsonPath("$.detail").exists());
   }
+
+  @Test
+  void shouldRegisterSuccessfully_whenValidDataProvided() throws Exception {
+    mockMvc
+        .perform(
+            post("/api/v1/auth/register")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                      "username": "newuser123",
+                      "password": "Password123!",
+                      "nickname": "测试用户",
+                      "confirmPassword": "Password123!"
+                    }
+                    """))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.message").value("用户注册成功"))
+        .andExpect(jsonPath("$.username").value("newuser123"))
+        .andExpect(jsonPath("$.nickname").value("测试用户"))
+        .andExpect(jsonPath("$.userId").exists());
+  }
+
+  @Test
+  void shouldReturn400_whenRegisterRequestIsInvalid() throws Exception {
+    mockMvc
+        .perform(
+            post("/api/v1/auth/register")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                      "username": "",
+                      "password": "weak",
+                      "nickname": "",
+                      "confirmPassword": "different"
+                    }
+                    """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.status").value(400))
+        .andExpect(jsonPath("$.detail").exists());
+  }
+
+  @Test
+  void shouldReturn409_whenUsernameAlreadyExists() throws Exception {
+    // First create a user
+    mockMvc
+        .perform(
+            post("/api/v1/auth/register")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                      "username": "duplicateuser",
+                      "password": "Password123!",
+                      "nickname": "用户1",
+                      "confirmPassword": "Password123!"
+                    }
+                    """))
+        .andExpect(status().isCreated());
+
+    // Try to create another user with same username
+    mockMvc
+        .perform(
+            post("/api/v1/auth/register")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                      "username": "duplicateuser",
+                      "password": "Password123!",
+                      "nickname": "用户2",
+                      "confirmPassword": "Password123!"
+                    }
+                    """))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.status").value(409))
+        .andExpect(jsonPath("$.detail").value("用户名 duplicateuser 已存在。"));
+  }
 }

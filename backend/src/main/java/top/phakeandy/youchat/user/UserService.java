@@ -1,14 +1,14 @@
 package top.phakeandy.youchat.user;
 
 import top.phakeandy.youchat.auth.CustomUserDetails;
-import top.phakeandy.youchat.user.request.CreateUserRequest;
-import top.phakeandy.youchat.user.responcse.CreateUserResponse;
+import top.phakeandy.youchat.auth.request.RegisterRequest;
+import top.phakeandy.youchat.auth.response.RegisterResponse;
 import top.phakeandy.youchat.user.responcse.UserResponse;
 
 public interface UserService {
 
   /** 创建新用户 */
-  CreateUserResponse createUser(CreateUserRequest request);
+  RegisterResponse createUser(RegisterRequest request);
 
   /** 获取当前用户信息 */
   UserResponse getCurrentUser(CustomUserDetails customUserDetails);
