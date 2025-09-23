@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: youchat
+
+  # Docker Compose is disabled for integration tests - we use Testcontainers
+  docker:
+    compose:
+      enabled: false
+
+  # Enable Flyway for integration tests
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # Test configuration
+  test:
+    database:
+      replace: none
+
+logging:
+  level:
+    root: WARN
+    "[org.testcontainers]": INFO
+    "[top.phakeandy.youchat]": DEBUG
+
+---
+# Profile for integration test with real containers
+spring:
+  config:
+    activate:
+      on-profile: integration-test
