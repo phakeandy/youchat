@@ -6,3 +6,31 @@ springdoc:
   swagger-ui:
     csrf:
       enabled: true
+
+logging:
+  level:
+    "[io.github.springwolf]": DEBUG
+springwolf:
+  docket:
+    base-package: top.phakeandy.youchat.chat
+    info:
+      description: YouChat 实时聊天 API - 支持一对一私聊和群聊功能
+      license:
+        name: Apache License 2.0
+      terms-of-service: http://asyncapi.org/terms
+      title: ${spring.application.name} Chat API
+      version: 1.0.0
+    servers:
+      stomp:
+        host: localhost:8080
+        protocol: stomp
+  enabled: true
+  plugin:
+    stomp:
+      endpoint:
+        app: /app
+        user: /user
+  ui:
+    defaults:
+      show-bindings: true
+      show-headers: true

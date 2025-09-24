@@ -37,7 +37,7 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers(
                         "/api/v1/auth/**",
-                        "/api/v1/register",
+                        "/springwolf/**",
                         "/scalar/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
