@@ -64,6 +64,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
 
 		<!-- 数据库相关依赖 -->
 		<dependency>
@@ -98,6 +102,16 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-scalar</artifactId>
 			<version>${springdoc.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.springwolf</groupId>
+			<artifactId>springwolf-stomp</artifactId>
+			<version>1.17.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.springwolf</groupId>
+			<artifactId>springwolf-ui</artifactId>
+			<version>1.17.0</version>
 		</dependency>
 
 		<!-- 运行时依赖 -->

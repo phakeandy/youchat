@@ -5,14 +5,41 @@
             userId="${db.user}" password="${db.password}">
         </jdbcConnection>
 
+        <javaTypeResolver>
+            <property name="useJSR310Types" value="true" />
+        </javaTypeResolver>
+
         <javaModelGenerator targetPackage="top.phakeandy.youchat.model" targetProject="MAVEN" />
         <javaClientGenerator targetPackage="top.phakeandy.youchat.mapper" targetProject="MAVEN" />
 
-        <table tableName="users" />
-        <table tableName="chat_groups" />
-        <table tableName="friendships" />
-        <table tableName="messages" />
-        <table tableName="group_members" />
-        <table tableName="message_read_records" />
+        <!-- 
+        查看 https://github.com/pgjdbc/pgjdbc/issues/1766
+        手动指定这个 offsetdatetime 是因为 Postgres/JDBC 的元数据将 TIMESTAMPZ 映射为 TIMESTAMP，
+        导致 Mybatis Generator 的 Bug：useJSR310Types 让时间字段映射为 java.util.LocalDateTime，
+        而不是 java.time.OffsetDateTime
+        -->
+        <table tableName="users">
+            <columnOverride column="created_at" javaType="java.time.OffsetDateTime" />
+            <columnOverride column="updated_at" javaType="java.time.OffsetDateTime" />
+        </table>
+        <table tableName="chat_groups">
+            <columnOverride column="created_at" javaType="java.time.OffsetDateTime" />
+            <columnOverride column="updated_at" javaType="java.time.OffsetDateTime" />
+        </table>
+        <table tableName="friendships">
+            <columnOverride column="created_at" javaType="java.time.OffsetDateTime" />
+            <columnOverride column="updated_at" javaType="java.time.OffsetDateTime" />
+        </table>
+        <table tableName="messages">
+            <columnOverride column="created_at" javaType="java.time.OffsetDateTime" />
+            <columnOverride column="updated_at" javaType="java.time.OffsetDateTime" />
+        </table>
+        <table tableName="group_members">
+            <columnOverride column="created_at" javaType="java.time.OffsetDateTime" />
+            <columnOverride column="updated_at" javaType="java.time.OffsetDateTime" />
+        </table>
+        <table tableName="message_read_records">
+            <columnOverride column="read_at" javaType="java.time.OffsetDateTime" />
+        </table>
     </context>
 </generatorConfiguration>

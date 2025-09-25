@@ -8,11 +8,11 @@ public class InvalidPasswordException extends ErrorResponseException {
 
   private static final long serialVersionUID = 1L;
 
-  public InvalidPasswordException(String message) {
+  public InvalidPasswordException(String message, Throwable cause) {
     super(
         HttpStatus.BAD_REQUEST,
         ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message),
-        null);
+        cause);
     getBody().setTitle("密码格式错误");
   }
 }

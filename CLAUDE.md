@@ -85,7 +85,7 @@ mvnd verify           # Run all quality checks and tests
 
 - **Framework**: Spring Boot 3.5.5 with Spring Security and Spring Session
 - **Language**: Java 21
-- **Architecture**: RESTful API with前后端分离
+- **Architecture**: RESTful API with 前后端分离
 - **Database**: PostgreSQL with Flyway migrations
 - **ORM**: MyBatis 3.0.5 with MyBatis Dynamic SQL (NOT JPA)
 - **Session Management**: Redis with Spring Session
@@ -152,19 +152,19 @@ Key design decisions:
 #### RESTful API Testing Requirements
 
 - **Use JsonPath for JSON response validation** - NEVER test string equality
-- **Test status codes, headers, and response structure
-- **Use `@MockBean` for dependency isolation in slice tests
-- **Test error scenarios and edge cases
-- **Avoid testing implementation details, focus on API contracts
+- \*\*Test status codes, headers, and response structure
+- \*\*Use `@MockBean` for dependency isolation in slice tests
+- \*\*Test error scenarios and edge cases
+- \*\*Avoid testing implementation details, focus on API contracts
 
 #### Database Testing
 
 - **Unit Tests**: H2 in-memory database for fast testing
 - **Integration Tests**: Testcontainers with PostgreSQL for realistic testing
-- **Use `@Transactional` for test isolation
-- **Test MyBatis mapper SQL queries and data access logic
+- \*\*Use `@Transactional` for test isolation
+- \*\*Test MyBatis mapper SQL queries and data access logic
 
-### STRICT** Coding Standards
+### STRICT\*\* Coding Standards
 
 #### Code Quality Requirements
 
@@ -177,12 +177,14 @@ Key design decisions:
 #### Spring Security 8.x Best Practices
 
 - **Use latest Spring Security 6.x APIs** (compatible with Spring Boot 3.5.5):
+
   - Use `UsernamePasswordAuthenticationToken.unauthenticated()` for creating unauthenticated tokens
   - Implement thread-safe context management with `SecurityContextHolderStrategy`
   - Manage session storage through `SecurityContextRepository`
   - Access authenticated user information with `@AuthenticationPrincipal` annotation
 
 - **Authentication Flow Standardization**:
+
   - Controller layer: Receive requests, validate input, call authentication manager
   - Service layer: Implement `UserDetailsService` and `AuthenticationProvider`
   - Configuration layer: Use `HttpSecurity` for security configuration
@@ -195,14 +197,16 @@ Key design decisions:
 
 #### Controller Layer Data Transfer Standards
 
-“廋” Contrller “胖” Service 原则：不要编写复杂的 Controller，Controller 的指责应该尽量单一（接收HTTP请求，解析请求参数（路径变量、查询参数、请求体等）。），更多的业务逻辑应该在 Service 层处理。
+“廋” Contrller “胖” Service 原则：不要编写复杂的 Controller，Controller 的指责应该尽量单一（接收 HTTP 请求，解析请求参数（路径变量、查询参数、请求体等）。），更多的业务逻辑应该在 Service 层处理。
 
 - **DTO/VO Usage Requirement**: All controller input parameters and output responses must be encapsulated using DTO/VO objects
+
   - **Input DTOs**: Use `FooRequest.java` naming convention (e.g., `LoginRequest.java`, `CreateUserRequest.java`)
   - **Output VOs**: Use `FooResponse.java` naming convention (e.g., `LoginResponse.java`, `UserInfoResponse.java`)
   - **Strict Prohibition**: Never use raw `Map<String, Object>` for request/response data transfer
 
 - **Use Java records for all DTOs and VOs (NON-NEGOTIABLE)**.
+
   - **Rationale**: record classes are the modern standard for immutable data carriers in Java. They enforce immutability, significantly reduce boilerplate code, and provide canonical equals(), hashCode(), and toString() implementations out of the box.
   - **Strict Prohibition**: The use of traditional Lombok-annotated classes (@Data, @Builder) for DTOs/VOs is now **DEPRECATED** in this project. Only use them if a record is fundamentally incompatible with a required library feature (a rare exception that must be justified).
   - All Request and Response objects must be defined as record.
@@ -212,7 +216,7 @@ Key design decisions:
 
 - **API Response Standard**:
   - Semantic HTTP Status Codes (**NON-NEGOTIABLE**)
-  - **Anti-Pattern Prohibition**: The use of a generic wrapper object (e.g., ApiResponse<T>, ResultDTO<T>) that always returns an HTTP 200 OK status, with the real status code hidden inside the JSON body, is STRICTLY PROHIBITED. 
+  - **Anti-Pattern Prohibition**: The use of a generic wrapper object (e.g., ApiResponse<T>, ResultDTO<T>) that always returns an HTTP 200 OK status, with the real status code hidden inside the JSON body, is STRICTLY PROHIBITED.
   - No Manual Error Handling in Controllers: Controllers MUST NOT contain try-catch blocks for business logic exceptions or manually construct error responses (e.g., return ResponseEntity.badRequest(...)). This clutters the controller and leads to inconsistent error handling.
   - Throw Custom Exceptions: Business logic errors from the service layer MUST be signaled by throwing specific, descriptive custom exceptions (e.g., ResourceNotFoundException, DuplicateEmailException).
   - Global Exception Handler: All custom exceptions MUST be handled in a centralized `@RestControllerAdvice` component. This ensures separation of concerns and consistent error responses across the entire application. Standardized Error Format (**CRITICAL**): All error responses for client-facing errors (4xx and 5xx status codes) MUST conform to the RFC 7807 "Problem Details for HTTP APIs" standard. Spring Boot has native support for this, which must be enabled and utilized.
@@ -223,6 +227,7 @@ Key design decisions:
 #### MyBatis Best Practices
 
 - **Code Generator Configuration**:
+
   - MyBatis Generator generates code to `target/generated-sources/mybatis-generator`
   - No need to manually create mapper folders in `src`
   - Use `build-helper-maven-plugin` to automatically add generated sources to compilation path
@@ -275,9 +280,9 @@ Key design decisions:
 Better TDD 开发范式 + API First：
 
 - **计划阶段** 首先，分析我的需求。然后，以列表形式打印出你详细的实现计划。等待我确认。
-- **契约阶段** 计划确认后，首先在 Controller 类中创建空的API方法，并使用 OpenAPI 3 (Swagger) 注解（如 @Operation, @ApiResponses, @ApiResponse）为其编写完整的API文档。这必须定义出请求体、成功的响应体以及所有可预见的错误响应（例如400, 401, 404）。
-- **测试阶段 - RED** 接下来，为这个API编写一个或多个集成测试（在...IntegrationTest.java中）。这些测试应该基于上一步定义的API契约，并且现在必然会失败。
-- **实现阶段 - GREEN** 现在，开始编写业务逻辑（通常在Service层和Repository层）以及Controller的实现代码。你的目标是让所有测试都通过。请遵循Spring Boot的最佳实践，例如分层架构、依赖注入等。
+- **契约阶段** 计划确认后，首先在 Controller 类中创建空的 API 方法，并使用 OpenAPI 3 (Swagger) 注解（如 @Operation, @ApiResponses, @ApiResponse）为其编写完整的 API 文档。这必须定义出请求体、成功的响应体以及所有可预见的错误响应（例如 400, 401, 404）。
+- **测试阶段 - RED** 接下来，为这个 API 编写一个或多个集成测试（在...IntegrationTest.java 中）。这些测试应该基于上一步定义的 API 契约，并且现在必然会失败。
+- **实现阶段 - GREEN** 现在，开始编写业务逻辑（通常在 Service 层和 Repository 层）以及 Controller 的实现代码。你的目标是让所有测试都通过。请遵循 Spring Boot 的最佳实践，例如分层架构、依赖注入等。
 - **质量门禁** 在所有测试通过后，运行 Formatter。然后运行代码质量检查工具 `mvnd verify`（Checkstyle, PMD，spotbugs）。确保代码符合规范后，再向我报告任务完成。
   - 可以忽略 spotbugs 的低优先级警告
 
@@ -314,7 +319,7 @@ Better TDD 开发范式 + API First：
 - **Structure over styling**: Test DOM structure, not visual presentation
 - **Test functionality**: What the component does, not how it looks
 
-### STRICT** Coding Standards
+### STRICT\*\* Coding Standards
 
 #### Component Format
 
@@ -332,7 +337,7 @@ Better TDD 开发范式 + API First：
 
 #### Color System (CRITICAL)
 
-- **Semantic Colors Only**: Hard-coded colors are **STRICTLY FORBIDDEN
+- **Semantic Colors Only**: Hard-coded colors are \*\*STRICTLY FORBIDDEN
 - **Forbidden**: `text-gray-500`, `text-gray-600`, `text-gray-800`, `bg-gray-100`, etc.
 - **Required Semantic Classes**:
   - Text: `text-primary`, `text-secondary`, `text-accent`, `text-base-content/[opacity]`
@@ -370,16 +375,19 @@ Better TDD 开发范式 + API First：
 **Better TDD Approach**: Test behavior, not implementation. Focus on user experience rather than styling details.
 
 - **Unit Tests (Component Logic)**: Vitest with Vue Test Utils
+
   - Focus: Component functionality, user interactions, state management
   - Avoid: CSS classes, styling details, internal implementation
   - Use: `aria-label`, `data-testid`, semantic selectors
 
 - **Component Tests**: Structure and behavior verification
+
   - Test: What users see and interact with
   - Verify: Text content, interactive elements, DOM structure
   - Never: Test visual presentation or CSS properties
 
 - **E2E Tests**: Playwright with multi-browser support
+
   - Focus: Complete user workflows, integration testing
   - Verify: Real user scenarios, cross-browser compatibility
   - Optional: Visual regression testing (when needed)
@@ -401,26 +409,26 @@ Better TDD 开发范式 + API First：
 
 #### 一、 集成测试 (@SpringBootTest + Testcontainers)
 
-- 文件命名：一个 Controller 对应一个集成测试类，使用 @SpringBootTest 和 @Testcontainers，在测试类名后面加上Integration Test 例如，对于 AuthenticationController.java，它的集成测试类应该是 AuthenticationControllerIntegrationTest.java。
+- 文件命名：一个 Controller 对应一个集成测试类，使用 @SpringBootTest 和 @Testcontainers，在测试类名后面加上 Integration Test 例如，对于 AuthenticationController.java，它的集成测试类应该是 AuthenticationControllerIntegrationTest.java。
 - 核心焦点： 测试从 API 端点到数据库的**完整后端应用调用链**。
 - 测试环境： 使用 Testcontainers 和 `@@ServiceConnection` 启动**所有真实的外部依赖**，如 **PostgreSQL**、**Redis** 等，不要使用 h2 数据库，搭建一个准生产环境。
 - 测试数据： 通过 DataFaker 、Mybatis Dynamic SQL 来管理测试数据。
 
 #### 二、 API 测试最佳实践
-        
+
 - JSON 断言： 使用 JsonPath 进行健壮、精确的 JSON 响应体断言。
 - HTTP 状态码： 全面测试各种在 API 契约中描述的状态码
 - 响应头： 验证关键响应头，如 Content-Type，以及创建资源后返回的 Location。
 - 场景覆盖： 测试所有关键场景，包括成功路径（Happy Path）、所有可预见的错误场景（如无效输入、资源不存在）和边界条件。
 - 列表接口： 针对返回列表的接口，必须测试其分页和筛选功能。
-    
+
 #### 三、 避免反模式
 
 1. **不测试框架：** 禁止测试 Spring 注解（如 `@Autowired`）、Getter/Setter、Mybatis 的基础 CRUD 或 Jackson 序列化。假设框架工作正常。
 2. **不测试实现细节：** 只测试公共方法的行为（输入/输出、状态改变、对外交互），**绝不**通过反射测试私有方法。
 3. **智能 Mock：**
-    - Mock 外部依赖（如数据库、第三方客户端）。
-    - **禁止**仅验证“方法是否被调用”（`verify(mock).someMethod()`）。必须验证**调用的参数**是否正确，或使用 Mock 来定义依赖的**行为**（如 `when(...).thenReturn(...)`）以驱动业务逻辑测试。
+   - Mock 外部依赖（如数据库、第三方客户端）。
+   - **禁止**仅验证“方法是否被调用”（`verify(mock).someMethod()`）。必须验证**调用的参数**是否正确，或使用 Mock 来定义依赖的**行为**（如 `when(...).thenReturn(...)`）以驱动业务逻辑测试。
 4. **聚焦业务逻辑：** 测试应覆盖核心的业务规则、条件分支、计算和异常流程。
 5. 无需性能测试
 6. 无需强调测试覆盖度，不要编写低质量的“凑数”测试。
@@ -428,7 +436,7 @@ Better TDD 开发范式 + API First：
 ### Backend Code Style
 
 1. 使用 `"string".formatted()` 而不是 `String.format()`
-
+2. 尽量使用 `@ResponseStatus`，尽量少用 `ResponseEntity`
 
 ## Project Structure
 

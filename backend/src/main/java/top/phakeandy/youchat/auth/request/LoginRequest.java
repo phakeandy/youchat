@@ -13,6 +13,6 @@ public record LoginRequest(
     @Schema(
             description = "用户密码",
             requiredMode = Schema.RequiredMode.REQUIRED,
-            example = "password123")
+            example = "Password123!")
         @NotBlank(message = "密码不能为空")
         String password) {}

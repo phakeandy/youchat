@@ -1,4 +1,4 @@
-package top.phakeandy.youchat.config;
+package top.phakeandy.youchat.common;
 
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;
