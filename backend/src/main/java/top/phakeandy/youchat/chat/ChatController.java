@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import top.phakeandy.youchat.chat.request.CreateChatRequest;
+import top.phakeandy.youchat.chat.request.UpdateChatRequest;
 
 @RestController
 @RequestMapping("/api/v1/chats")
@@ -51,8 +53,7 @@ public class ChatController {
                     mediaType = MediaType.APPLICATION_PROBLEM_JSON_VALUE,
                     schema = @Schema(implementation = ProblemDetail.class))),
       })
-  public ResponseEntity<ChatResponse> createChat(
-      @RequestBody CreateChatRequest request) {
+  public ResponseEntity<ChatResponse> createChat(@RequestBody CreateChatRequest request) {
     ChatResponse response = chatService.createChat(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
@@ -94,8 +95,7 @@ public class ChatController {
                     schema = @Schema(implementation = ProblemDetail.class))),
       })
   public ResponseEntity<ChatResponse> getChat(
-      @Parameter(description = "群聊ID", required = true, example = "1")
-      @PathVariable Long chatId) {
+      @Parameter(description = "群聊ID", required = true, example = "1") @PathVariable Long chatId) {
     ChatResponse response = chatService.getChat(chatId);
     return ResponseEntity.ok(response);
   }
@@ -127,8 +127,7 @@ public class ChatController {
                     schema = @Schema(implementation = ProblemDetail.class))),
       })
   public ResponseEntity<ChatResponse> updateChat(
-      @Parameter(description = "群聊ID", required = true, example = "1")
-      @PathVariable Long chatId,
+      @Parameter(description = "群聊ID", required = true, example = "1") @PathVariable Long chatId,
       @RequestBody UpdateChatRequest request) {
     ChatResponse response = chatService.updateChat(chatId, request);
     return ResponseEntity.ok(response);
@@ -149,8 +148,7 @@ public class ChatController {
       })
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteChat(
-      @Parameter(description = "群聊ID", required = true, example = "1")
-      @PathVariable Long chatId) {
+      @Parameter(description = "群聊ID", required = true, example = "1") @PathVariable Long chatId) {
     chatService.deleteChat(chatId);
   }
 }

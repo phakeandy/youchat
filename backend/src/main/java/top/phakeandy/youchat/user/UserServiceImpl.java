@@ -58,8 +58,7 @@ public class UserServiceImpl implements UserService {
           "用户注册成功", createdUser.getId(), createdUser.getUsername(), createdUser.getNickname());
 
     } catch (IllegalArgumentException e) {
-      // 处理密码验证错误
-      throw new InvalidPasswordException(e.getMessage());
+      throw new InvalidPasswordException("创建用户密码格式错误：" + e.getMessage(), e);
     }
   }
 
